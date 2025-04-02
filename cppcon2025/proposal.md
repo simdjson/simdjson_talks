@@ -17,18 +17,19 @@ Try to answer the reader's questions, What will I learn? and Why is this importa
 
 ## Preferred session length
 
-[] one session (60 minutes)
-[] half session (30 minutes)
-[] two sessions (120 minutes)
-[] three sessions (180 minutes)
-[] four sessions (240 minutes)
+
+- [ ] one session (60 minutes)
+- [ ] half session (30 minutes)
+- [ ] two sessions (120 minutes)
+- [ ] three sessions (180 minutes)
+- [ ] four sessions (240 minutes)
 
 ## Session Level
 
-[] beginner
-[x] intermediate
-[x] advanced
-[x] expert
+- [ ] beginner
+- [x] intermediate
+- [x] advanced
+- [x] expert
 
 ## Audience Description
 
@@ -42,34 +43,34 @@ Try to answer the reader's questions, What will I learn? and Why is this importa
 
 ## Target track
 
-[] Back to Basics
-[] Software Design
-[] Scientific Computing
-[] Tooling
-[] Embedded
-[] Robotics & AI
-[] GameDev
-[] Business & Careers
+- [ ] Back to Basics
+- [ ] Software Design
+- [ ] Scientific Computing
+- [ ] Tooling
+- [ ] Embedded
+- [ ] Robotics & AI
+- [ ] GameDev
+- [ ] Business & Careers
 
 ## Category
 
- [] Algorithms
- [] API Design
- [] Concurrency
- [] Embedded
- [X] Future C++
- [X] Generic/Metaprogramming
- [] Math/Analysis
- [X] Performance
- [] Standard Library
- [] Software Design
- [] Tooling/Utilities
- [] Value Semantics
- [] Safety
- [] Security
- [] Software Quality
- [] Testing
- [] Functional
+- [ ] Algorithms
+- [ ] API Design
+- [ ] Concurrency
+- [ ] Embedded
+- [X] Future C++
+- [X] Generic/Metaprogramming
+- [ ] Math/Analysis
+- [X] Performance
+- [ ] Standard Library
+- [ ] Software Design
+- [ ] Tooling/Utilities
+- [ ] Value Semantics
+- [ ] Safety
+- [ ] Security
+- [ ] Software Quality
+- [ ] Testing
+- [ ] Functional
 
 ## Additional tags
 A comma separated list of tokens not covered by the track or categories - e.g.: constexpr, build systems, templates.
