@@ -39,7 +39,7 @@ Try to answer the reader's questions, What will I learn? and Why is this importa
 
 *If this session will have one or more additional presenters please add their email address(es) here, separated by commas if more than one*
 
-**I use the email address daniel@lemire.me, what is Francisco email for the purpose of this conference?**
+**I use the email address daniel@lemire.me, franciscogthiesen@gmail.com**
 
 ## Target track
 
