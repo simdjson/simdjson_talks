@@ -56,6 +56,8 @@ Thankfully, C++ might soon be getting reflective metaprogramming ([PR2996](https
 
 *Examples: library authors, application developers, game developers, etc. A quality description helps your audience find your submission. Please keep it short and sweet. Full sentence not required.*
 
+Performance-focused engineers, data science and AI engineers, ambitious library authors, application and game developers interested in what is coming next 
+
 ## Co-presenter(s)
 
 *If this session will have one or more additional presenters please add their email address(es) here, separated by commas if more than one*
