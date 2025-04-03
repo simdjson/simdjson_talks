@@ -15,7 +15,7 @@ JSON, or JavaScript Object Notation, has become a cornerstone for storing and ex
 
 With languages like Java, C#, Zig, Rust, or Python, JSON serialization and deserialization typically requires far less work. In particular, Rust's serde library blends convenience with high speed. We wish for a C++ library to automatically handle JSON production and consumption, seamlessly tied to native data structures. It is not merely to simplify life for developers; it is also about crafting code that is both fast and solid, generated at compile time by a battle-tested library.
 
-Thankfully, C++ might soon be getting reflective metaprogramming ([PR2996](https://github.com/cplusplus/papers/issues/1668)). Leveraging the [experimental Bloomberg LLVM fork](https://github.com/bloomberg/clang-p2996) with reflective metaprogramming, we have built a full-fledged implementation—complete with tests, benchmarks, and documentation. Our goal is production-ready code the moment mainstream compilers catch up. The results speak for themselves: we are parsing JSON directly into C++ structures at gigabytes per second, outpacing even mature heavyweights like Rust's serde. Better yet, the conversion between C++ data structures and JSON is fully automated, thanks to metaprogramming. It has the potential to be a leap forward for C++ in the data-driven age. Unfortunately, there are still problems and limitations: we present them and provide some solutions.
+Thankfully, C++ might soon be getting reflective metaprogramming ([PR2996](https://github.com/cplusplus/papers/issues/1668)). Leveraging the [experimental Bloomberg LLVM fork](https://github.com/bloomberg/clang-p2996) with reflective metaprogramming, we have built a full-fledged implementation—complete with tests, benchmarks, and documentation. Our goal is to have production-ready code the moment mainstream compilers catch up. The results speak for themselves: we are parsing JSON directly into C++ structures at gigabytes per second, outpacing even mature heavyweights like Rust's serde. Better yet, the conversion between C++ data structures and JSON is fully automated, thanks to metaprogramming. It has the potential to be a leap forward for C++ in the data-driven age. Unfortunately, there are still problems and limitations: we present them and provide some solutions.
 
 
 ## Outline
@@ -96,6 +96,8 @@ Thankfully, C++ might soon be getting reflective metaprogramming ([PR2996](https
 ## Additional tags
 A comma separated list of tokens not covered by the track or categories - e.g.: constexpr, build systems, templates.
 For additional information, see our tagging guide.
+
+reflection, concepts, vectorized instructions, metaprogramming
 
 ## Session Material
 *List material that you will submit to the public conference repository: (slides, source code, etc.)*
