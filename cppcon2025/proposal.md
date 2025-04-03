@@ -40,7 +40,7 @@ Thankfully, C++ might soon be getting reflective metaprogramming ([PR2996](https
 
 
 - [X] one session (60 minutes)
-- [ ] half session (30 minutes)
+- [X] half session (30 minutes)
 - [ ] two sessions (120 minutes)
 - [ ] three sessions (180 minutes)
 - [ ] four sessions (240 minutes)
@@ -107,3 +107,5 @@ All of the source code is available publicly as open source (using a business fr
 
 ## Comments
 *Anything else you'd like to communicate to the committee*
+
+We could condense the presentation into a 30 minutes session, although we believe there is more than enough interesting content for a 60 minute session.
