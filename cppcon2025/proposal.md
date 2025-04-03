@@ -26,6 +26,7 @@ Thankfully, C++ might soon be getting reflective metaprogramming ([PR2996](https
 - C++20 elements: concepts, tag_invoke, constexpr
 - C++26 reflective metaprogramming: modest introduction
 - How we made use of it: serialization and deserialization
+- Quick perf analysis for our first working prototype (hint: it was not super fast!)
 - Optimizing the code: what made a difference!
 - Serialization benchmarks!
 - Deserialization benchmarks: Rust Serde and others.
