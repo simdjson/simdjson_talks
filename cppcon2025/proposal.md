@@ -97,7 +97,7 @@ Thankfully, C++ might soon be getting reflective metaprogramming ([PR2996](https
 A comma separated list of tokens not covered by the track or categories - e.g.: constexpr, build systems, templates.
 For additional information, see our tagging guide.
 
-reflection, concepts, vectorized instructions, metaprogramming
+reflection, concepts, vectorized instructions, metaprogramming, performance, extensibility
 
 ## Session Material
 *List material that you will submit to the public conference repository: (slides, source code, etc.)*
