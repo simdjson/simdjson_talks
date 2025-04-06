@@ -160,10 +160,10 @@ reflection, concepts, vectorized instructions, metaprogramming, performance, ext
 ## Session Material
 *List material that you will submit to the public conference repository: (slides, source code, etc.)*
 
-All of the source code is available publicly as open source (using a business friendly licence). The slides as well as our notes will be made freely available.
-
+All source code is publicly available as open source under a business-friendly license. Additionally, the slides and our accompanying notes will be freely accessible to everyone.
 
 ## Comments
 *Anything else you'd like to communicate to the committee*
 
-We could condense the presentation into a 30 minutes session, although we believe there is more than enough interesting content for a 60 minute session.
+We could streamline the presentation into a concise 30-minute session; however, we believe the wealth of engaging content easily justifies a full 60-minute duration.
+
