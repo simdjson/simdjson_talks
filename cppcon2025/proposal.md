@@ -123,7 +123,7 @@ Performance-focused engineers, data science and AI engineers, ambitious library 
 ## Target track
 
 - [ ] Back to Basics
-- [ ] Software Design
+- [X] Software Design
 - [ ] Scientific Computing
 - [ ] Tooling
 - [ ] Embedded
