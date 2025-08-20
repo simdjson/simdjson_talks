@@ -10,15 +10,102 @@ _paginate: false
 # C++26 Reflection for JSON Serialization
 ## A Practical Journey
 
-Daniel Lemire and Francisco Geiman Thiesen
+- Daniel Lemire, *University of Quebec* :canada:
+- Francisco Geiman Thiesen, *Microsoft* :us:
 
 CppCon 2025
 
+
 ---
 
-# The Problem: Every Developer's JSON Nightmare
+# JSON
+
+
+- Portable, simple
+- Douglas Crockford (2001)
+- RFC 8259 (December 2017)
+
+
+---
+
+# JSON
+
+- scalar values
+  - strings (controls and quotes must be escaped)
+  - numbers (but not `NaN` or `Inf`)
+  - `true`, `false`, `null`
+- composed values
+  - objects (key/value)
+  - arrays (list)
+
+
+---
+
+```json
+{
+    "username": "Alice",
+    "level": 42,
+    "health": 99.5,
+    "inventory": ["sword", "shield", "potion"]
+}
+```
+
+---
+
+# JSON downside?
+
+JSON can be *slow*. E.g., 20 MB/s.
+
+- Much slower than disk or network
+
+---
+
+<img src="images/fastdisk.png" />
+
+
+---
+
+# Performance
+
+- simdjson was the first library to break the gigabyte per second barrier
+    * Parsing Gigabytes of JSON per Second, VLDB Journal 28 (6), 2019
+    * On-Demand JSON: A Better Way to Parse Documents? SPE 54 (6), 2024
+- JSON for Modern C++ can be $100\times$ slower!
+
+<img src="images/simdjson.png" width="10%" />
+
+
+---
+
+# Usage
+
+The simdjson library is found in...
+
+- Node.js
+- ClickHouse
+- Velox
+
+<img src="images/nodejs.jpg" width="20%">
+
+
+---
+
+# Automate the serialization/deserialization process.
+
+
+<img src="images/tofrom.svg" width="100%">
+
+---
+
+# The Problem
 
 Imagine you're building a game server that needs to persist player data.
+
+
+
+<img src="images/player.svg" width="60%">
+
+---
 
 You start simple:
 
@@ -31,54 +118,59 @@ struct Player {
 };
 ```
 
+
 ---
 
 # The Traditional Approach: Manual Serialization
 
-Without reflection, you write this tedious code:
+Without reflection, you may write this tedious code:
 
 ```cpp
 // Serialization - converting Player to JSON
-std::string serialize_player(const Player& p) {
-    std::stringstream ss;
-    ss << "{";
-    ss << "\"username\":\"" << escape_json(p.username) << "\",";
-    ss << "\"level\":" << p.level << ",";
-    ss << "\"health\":" << p.health << ",";
-    ss << "\"inventory\":[";
-    for (size_t i = 0; i < p.inventory.size(); ++i) {
-        if (i > 0) ss << ",";
-        ss << "\"" << escape_json(p.inventory[i]) << "\"";
-    }
-    ss << "]";
-    ss << "}";
-    return ss.str();
-}
+fmt::format(
+        "{{"
+        "\"username\":\"{}\","
+        "\"level\":{},"
+        "\"health\":{},"
+        "\"inventory\":{}"
+        "}}",
+        escape_json(p.username),
+        p.level,
+        std::isfinite(p.health) ? p.health : -1.0,
+        p.inventory| std::views::transform(escape_json)
+);
 ```
 
 ---
 
-# Manual Deserialization
+# With a library (JSON for Modern C++)
+
+Or you might use a library.
 
 ```cpp
-// Deserialization - converting JSON back to Player
-simdjson::error_code deserialize_player(simdjson::ondemand::value& val, Player& p) {
-    simdjson::ondemand::object obj;
-    SIMDJSON_TRY(val.get_object().get(obj));
+std::string to_json(Player& p) {
+  return nlohmann::json{{"username", p.username},
+                        {"level", p.level},
+                        {"health", p.health},
+                        {"inventory", p.inventory}}
+      .dump();
+}
+```
 
-    SIMDJSON_TRY(obj["username"].get_string().get(p.username));
-    SIMDJSON_TRY(obj["level"].get_int64().get(p.level));
-    SIMDJSON_TRY(obj["health"].get_double().get(p.health));
 
-    simdjson::ondemand::array arr;
-    SIMDJSON_TRY(obj["inventory"].get_array().get(arr));
-    for (auto item : arr) {
-        std::string_view sv;
-        SIMDJSON_TRY(item.get_string().get(sv));
-        p.inventory.emplace_back(sv);
-    }
+---
 
-    return simdjson::SUCCESS;
+# Manual Deserialization (simdjson)
+
+<!-- The code was really painful to read, this is probably sufficient. -->
+```cpp
+object obj = val.get_object();
+p.username = obj["username"].get_string();
+p.level = obj["username"].get_int64();
+p.health = obj["health"].get_double();
+array arr = obj["inventory"].get_array();
+for (auto item : arr) {
+    p.inventory.emplace_back(item.get_string());
 }
 ```
 
@@ -92,6 +184,8 @@ This manual approach has several problems:
 2. **Maintenance Nightmare**: Add a new field? Update both functions!
 3. **Error-Prone**: Typos in field names, forgotten fields, type mismatches
 4. **Boilerplate Explosion**: 30+ lines for a simple 4-field struct
+5. **Performance**: You may fall into performance traps
+
 
 ---
 
@@ -100,21 +194,15 @@ This manual approach has several problems:
 ```cpp
 struct Equipment {
     std::string name;
-    int damage;
-    int durability;
+    int damage; int durability;
 };
-
 struct Achievement {
-    std::string title;
-    std::string description;
-    bool unlocked;
+    std::string title; std::string description; bool unlocked;
     std::chrono::system_clock::time_point unlock_time;
 };
-
 struct Player {
     std::string username;
-    int level;
-    double health;
+    int level; double health;
     std::vector<std::string> inventory;
     std::map<std::string, Equipment> equipped;     // New!
     std::vector<Achievement> achievements;         // New!
@@ -145,7 +233,7 @@ struct Player {
 
 ---
 
-# Automatic Serialization & Deserialization
+# Automatic Serialization
 
 ```cpp
 // Serialization - one line!
@@ -153,20 +241,31 @@ void save_player(const Player& p) {
     std::string json = simdjson::to_json(p);  // That's it!
     // Save json to file...
 }
+```
 
+---
+
+# Automatic Deserialization
+
+```cpp
 // Deserialization - one line!
 Player load_player(const std::string& json_str) {
     return simdjson::from<Player>(json_str);  // That's it!
 }
 ```
 
+---
+
 - **No manual field mapping**
 - **No maintenance burden**
 - **Handles nested structures automatically**
+- **Performance tuned by the library**
+
+
 
 ---
 
-# Comparison with Other Languages
+# Python
 
 ```python
 # Python
@@ -175,29 +274,147 @@ json_str = json.dumps(player.__dict__)
 player = Player(**json.loads(json_str))
 ```
 
+<img src="images/python.png" width="10%"/>
+
+
+---
+
+# Python reflection
+
+```Python
+def inspect_object(obj):
+    print(f"Class name: {obj.__class__.__name__}")
+    for attr, value in vars(obj).items():
+        print(f"  {attr}: {value}")
+```
+
+
+---
+
+# Go
+
+```Go
+jsonData, err := json.MarshalIndent(player, "", "  ")
+if err != nil {
+	log.Fatalf("Error during serialization: %v", err)
+}
+var deserializedPlayer Player
+err = json.Unmarshal([]byte(jsonStr), &deserializedPlayer)
+```
+
+
+<img src="images/go.svg" />
+
+
+---
+
+# Go reflection
+
+- Runtime reflection only 
+
+```Go
+    typ := reflect.TypeOf(obj)
+    for i := 0; i < typ.NumField(); i++ {
+        field := typ.Field(i)
+    }
+```
+
+
+---
+
+# Java and C#
+
+```C#
+string jsonString = JsonSerializer.Serialize(player, options);
+Player deserializedPlayer = JsonSerializer.Deserialize<Player>(jsonInput, options);
+```
+
+
+<img src="images/java.png" width="10%"/>
+
+<img src="images/csharp.png" width="10%"/>
+
+
+---
+
+# Java and C# reflection
+
+- Runtime reflection only.
+
+
+```java
+Class<?> playerClass = Player.class;
+Object playerInstance = playerClass.getDeclaredConstructor().newInstance();
+Field nameField = playerClass.getDeclaredField("name");
+```
+
+---
+
+# Rust (serde)
+
 ```rust
 // Rust with serde
 let json_str = serde_json::to_string(&player)?;
 let player: Player = serde_json::from_str(&json_str)?;
 ```
 
+
+<img src="images/rust.png" width="10%" />
+
+
+---
+
+# Rust reflection
+
+
+-  Rust does not have ANY introspection. 
+- You cannot enumerate the methods of a struct. Either at runtime or at compile-time.
+- Rust relies on annotation (serde) followed by re-parsing of the code.
+
+
+---
+
+# Reflection as accessing the attributes of a struct.
+
+| language | runtime reflection | compile-time reflection |
+|:---------|:-------------------|:------------------------|
+| C++ 26   |      🙅              |       ✅               |
+| Go   |          ✅           |       🙅               |
+| Java   |       ✅              |     🙅                |
+| C#   |          ✅           |       🙅               |
+| Rust   |         🙅           |       🙅               |
+
+---
+
+# With C++26: simple, maintainable, performant code
+
 ```cpp
-// C++26 with simdjson - just as clean!
 std::string json_str = simdjson::to_json(player);
 Player player = simdjson::from<Player>(json_str);
 ```
 
+- **AT COMPILE TIME**
+- with no extra tooling
+- no annotation
+
 ---
+
 
 # How Does It Work?
 
 ## The Key Insight: Compile-Time Code Generation
 
-A common question: **"How can compile-time reflection handle runtime JSON data?"**
+**"How can compile-time reflection handle runtime JSON data?"**
 
 The answer: Reflection operates on **types and structure**, not runtime values. 
 
 It generates regular C++ code at compile time that handles your runtime data.
+
+
+
+
+
+
 
 ---
 

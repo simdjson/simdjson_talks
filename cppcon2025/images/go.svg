@@ -1,0 +1,6 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Defining the circular blue background -->
+  <circle cx="100" cy="100" r="100" fill="#00ADD8"/>
+  <!-- Styling the 'go' text to approximate Wasa font -->
+  <text x="50" y="130" font-family="Helvetica, Arial, sans-serif" font-size="80" font-weight="bold" fill="white">go</text>
+</svg>

@@ -1,0 +1,8 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Rounded square background -->
+  <rect x="30" y="30" width="140" height="140" rx="20" ry="20" fill="#68217A"/>
+  <!-- Sharp symbol (#) -->
+  <text x="60" y="130" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="white">#</text>
+  <!-- C# text -->
+  <text x="60" y="180" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="bold" fill="#68217A">C#</text>
+</svg>
