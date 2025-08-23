@@ -378,11 +378,11 @@ let player: Player = serde_json::from_str(&json_str)?;
 
 | language | runtime reflection | compile-time reflection |
 |:---------|:-------------------|:------------------------|
-| C++ 26   |      🙅              |       ✅               |
-| Go   |          ✅           |       🙅               |
-| Java   |       ✅              |     🙅                |
-| C#   |          ✅           |       🙅               |
-| Rust   |         🙅           |       🙅               |
+| C++ 26   |      👎              |       ✅               |
+| Go   |          ✅           |       👎               |
+| Java   |       ✅              |     👎                |
+| C#   |          ✅           |       👎               |
+| Rust   |         👎           |       👎               |
 
 ---
 
