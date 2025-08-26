@@ -166,7 +166,7 @@ std::string to_json(Player& p) {
 ```cpp
 object obj = val.get_object();
 p.username = obj["username"].get_string();
-p.level = obj["username"].get_int64();
+p.level = obj["level"].get_int64();
 p.health = obj["health"].get_double();
 array arr = obj["inventory"].get_array();
 for (auto item : arr) {
