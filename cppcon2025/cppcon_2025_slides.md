@@ -667,6 +667,205 @@ Through concepts and template specialization, we support:
 
 All work seamlessly with reflection!
 
+
+---
+
+# Runtime dispatching
+
+- One function semantically
+- Several implementations
+- Select the best one at runtime for performance.
+
+
+
+---
+
+# Issue: x64 processors support different instructions
+
+A Zen 5 CPU and a Pentium 4 CPU can be quite different.
+
+```cpp
+bool has_sse2() { /* query the CPU */ }
+bool has_avx2() { /* query the CPU */ }
+bool has_avx512() { /* query the CPU */ }
+```
+
+These functions cannot be `consteval`.
+
+
+---
+
+<img src="images/dispatching.svg" width="50%">
+
+---
+
+# Example: Sum function
+
+```cpp
+using SumFunc = float (*)(const float *, size_t);
+```
+
+---
+
+# Setup a reassignable implementation 
+
+
+```cpp
+SumFunc &get_sum_fnc() {
+  static SumFunc sum_impl = sum_init;
+  return sum_impl;
+}
+```
+
+We initialize it with some special initialization function.
+
+
+
+---
+
+```cpp
+float sum_init(const float *data, size_t n) {
+  SumFunc &sum_impl = get_sum_fnc();
+  if (has_avx2()) {
+    sum_impl = sum_avx2;
+  } else if (has_sse2()) {
+    sum_impl = sum_sse2;
+  } else {
+    sum_impl = sum_generic;
+  }
+  return sum_impl(data, n);
+}
+```
+
+On first call, `get_sum_fnc()` is modified, and then it will remain constant.
+
+---
+
+# Runtime dispatching and metaprogramming
+
+- Metaprogramming is at compile-time.
+- Runtime dispatching is fundamentally at runtime.
+
+---
+
+# Does your string need escaping?
+
+
+- In JSON, you must escape control characters, quotes.
+- Most strings in practice do not need escaping.
+
+
+```Cpp
+simple_needs_escaping(std::string_view v) {
+  for (unsigned char c : v) {
+    if(json_quotable_character[c]) { return true; }
+  }
+  return false;
+}
+```
+
+---
+
+
+## SIMD
+
+- Stands for Single instruction, multiple data
+- Allows us to process 16 (or more) bytes or more with one instruction
+- Supported on all modern CPUs (phone, laptop)
+
+---
+
+# SIMD (Pentium 4 and better)
+
+```cpp
+__m128i word = _mm_loadu_si128(data); // load 16 bytes
+// check for control characters:
+_mm_cmpeq_epi8(_mm_subs_epu8(word, _mm_set1_epi8(31)),
+                                _mm_setzero_si128());
+```
+
+---
+
+# SIMD (AVX-512)
+
+```cpp
+__m512i word = _mm512_loadu_si512(data); // load 64 bytes
+// check for control characters:
+_mm512_cmple_epu8_mask(word, _mm512_set1_epi8(31));
+```
+
+---
+
+# Runtime dispatching is poor with quick functions
+
+- Calling a fast function like `fast_needs_escaping` without inlining prevents useful optimizations.
+- Runtime dispatching implies a function call!
+
+---
+
+# Current solution
+
+- No runtime dispatching (*sad face*).
+- All x64 processors support Pentium 4-level SIMD. Use that in a short function.
+- *Easy* if programmer builds for specific machine (`-march=native`), use fancier tricks.
+
+---
+
+# Compile-time string escaping
+
+- Often the 'keys' are known at compile time.
+
+
+```cpp
+struct Player {
+    std::string username;
+    int level;
+    double health;
+    std::vector<std::string> inventory;
+};
+```
+
+- Keys are: `username`, `level`, `health`, `inventory`. 
+
+---
+
+# Escape at compile time.
+
+```cpp
+  [:expand(std::meta::nonstatic_data_members_of(...)] {
+    constexpr auto key = 
+      std::define_static_string(consteval_to_quoted_escaped(
+        std::meta::identifier_of(dm)));
+    b.append_raw(key);
+    b.append(':');
+    // ...
+  };
+```
+
+---
+
+# Otherwise tricky to do
+
+- Outside metaprogramming, lots of values are compile-time constants
+- But processing it at compile time is not always easy/convenient.
+
+---
+
+# Example: `g` returns 1
+
+```cpp
+constexpr int convert(const char * x) {
+    if (std::is_constant_evaluated()) { return 0; }
+    return 1;
+}
+
+int g() {
+    constexpr char key[] = "name";
+    auto x = convert(key);
+    return x;
+}
+```
+
 ---
 
 # Conclusion
