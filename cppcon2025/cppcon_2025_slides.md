@@ -310,7 +310,7 @@ err = json.Unmarshal([]byte(jsonStr), &deserializedPlayer)
 
 # Go reflection
 
-- Runtime reflection only 
+- Runtime reflection only
 
 ```Go
     typ := reflect.TypeOf(obj)
@@ -367,7 +367,7 @@ let player: Player = serde_json::from_str(&json_str)?;
 # Rust reflection
 
 
--  Rust does not have ANY introspection. 
+-  Rust does not have ANY introspection.
 - You cannot enumerate the methods of a struct. Either at runtime or at compile-time.
 - Rust relies on annotation (serde) followed by re-parsing of the code.
 
@@ -406,7 +406,7 @@ Player player = simdjson::from<Player>(json_str);
 
 **"How can compile-time reflection handle runtime JSON data?"**
 
-The answer: Reflection operates on **types and structure**, not runtime values. 
+The answer: Reflection operates on **types and structure**, not runtime values.
 
 It generates regular C++ code at compile time that handles your runtime data.
 
@@ -498,7 +498,7 @@ struct Player {
 
 // RUNTIME: The generated code processes actual JSON data
 std::string json = R"({"username":"Alice","level":42,"health":100.0})";
-Player p = simdjson::from<Player>(json);  
+Player p = simdjson::from<Player>(json);
 // Runtime values flow through compile-time generated code
 ```
 
@@ -655,23 +655,81 @@ Just simdjson leveraging C++26 reflection.
 
 ---
 
-# Supporting Standard Containers
+# The Container Challenge
 
-Through concepts and template specialization, we support:
+We can say that serializing/parsing the basic types and custom classes/structs is pretty much effortless.
 
-- `std::vector<T>`, `std::array<T, N>`
-- `std::map<K, V>`, `std::unordered_map<K, V>`
-- `std::optional<T>`
-- `std::variant<Types...>`
-- And many more...
+How do we automatically serialize ALL these different containers?
 
-All work seamlessly with reflection!
+- `std::vector<T>`, `std::list<T>`, `std::deque<T>`
+- `std::map<K,V>`, `std::unordered_map<K,V>`
+- `std::set<T>`, `std::array<T,N>`
+- Custom containers from libraries
+- **Future containers not yet invented**
+
+---
+
+# The Naive Approach: Without Concepts
+
+Without concepts, you'd need a separate function for EACH container type:
+
+```cpp
+// The OLD way - repetitive and error-prone! 😱
+void serialize(string_builder& b, const std::vector<T>& v) { /* ... */ }
+void serialize(string_builder& b, const std::list<T>& v) { /* ... */ }
+void serialize(string_builder& b, const std::deque<T>& v) { /* ... */ }
+void serialize(string_builder& b, const std::set<T>& v) { /* ... */ }
+// ... 20+ more overloads for each container type!
+```
+
+**Problem**: New container type? Write more boilerplate!
+
+---
+
+# The Solution: Concepts as Pattern Matching
+
+Concepts let us say: **"If it walks like a duck and quacks like a duck..."**
+
+```cpp
+// The NEW way - one function handles ALL array-like containers!
+template<typename T>
+  requires(has_size_and_subscript<T>)  // "If it has .size() and operator[]"
+void serialize(string_builder& b, const T& container) {
+    b.append('[');
+    for (size_t i = 0; i < container.size(); ++i) {
+        serialize(b, container[i]);
+    }
+    b.append(']');
+}
+```
+
+✅ Works with `vector`, `array`, `deque`, custom containers...
+
+---
+
+# Concepts + Reflection = Automatic Support
+
+When you write:
+```cpp
+struct GameData {
+    std::vector<int> scores;           // Array-like → [1,2,3]
+    std::map<string, Player> players;  // Map-like → {"Alice": {...}}
+    MyCustomContainer<Item> items;     // Your container → Just works!
+};
+```
+
+The magic:
+1. **Reflection** discovers your struct's fields
+2. **Concepts** match container behavior to serialization strategy
+3. **Result**: ALL containers work automatically - standard, custom, or future!
+
+**Write once, works everywhere™**
 
 ---
 
 # Conclusion
 
-## C++26 Reflection + simdjson = 
+## C++26 Reflection + simdjson =
 
 - ✅ **Zero boilerplate**
 - ✅ **Compile-time safety**
