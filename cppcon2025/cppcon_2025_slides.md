@@ -77,6 +77,34 @@ JSON can be *slow*. E.g., 20 MB/s.
 
 ---
 
+
+## SIMD
+
+- Stands for Single instruction, multiple data
+- Allows us to process 16 (or more) bytes or more with one instruction
+- Supported on all modern CPUs (phone, laptop)
+
+---
+
+# Superscalar vs. SIMD execution
+
+| processor       | year    | arithmetic logic units    | SIMD units     | simdjson |
+|-----------------|---------|---------------------------|----------------|----------|               
+| Apple M*       |  2019   |    6+                      | $4 \times 128$ | 🥉        |
+| Intel Lion Cove       |  2024   |    6                | $4 \times 256$ | 🥈🥈        |
+| AMD Zen 5       |  2024   |    6                      | $4 \times 512$ | 🥇🥇🥇        |
+
+
+---
+
+
+<img src="images/simdjson_benchmark.png" width="60%"/>
+
+https://openbenchmarking.org/test/pts/simdjson
+
+
+---
+
 # Usage
 
 The simdjson library is found in...
@@ -445,7 +473,8 @@ template <typename T>
   requires(std::is_class_v<T>)  // For user-defined types
 error_code deserialize(auto& json_value, T& out) {
     simdjson::ondemand::object obj;
-    SIMDJSON_TRY(json_value.get_object().get(obj));
+    auto er = json_value.get_object().get(obj);
+    if(er) { return er; }
 
     // This [:expand:] happens at COMPILE TIME
     // It literally generates code for each member
@@ -764,14 +793,6 @@ simple_needs_escaping(std::string_view v) {
 }
 ```
 
----
-
-
-## SIMD
-
-- Stands for Single instruction, multiple data
-- Allows us to process 16 (or more) bytes or more with one instruction
-- Supported on all modern CPUs (phone, laptop)
 
 ---
 

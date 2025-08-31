@@ -26,9 +26,8 @@ float sum_avx2(const float *data, size_t n) {
 }
 
 SumFunc &get_sum_fnc();
-// Fonction d'initialisation pour le dispatching
+
 float sum_init(const float *data, size_t n) {
-  std::cout << "Initialisation de la fonction sum...\n";
   SumFunc &sum_impl = get_sum_fnc();
   if (has_avx2()) {
     sum_impl = sum_avx2;
@@ -40,13 +39,11 @@ float sum_init(const float *data, size_t n) {
   return sum_impl(data, n);
 }
 
-// Gestion du pointeur de fonction statique
 SumFunc &get_sum_fnc() {
   static SumFunc sum_impl = sum_init;
   return sum_impl;
 }
 
-// Fonction principale avec dispatching
 float sum(const float *data, size_t n) { return get_sum_fnc()(data, n); }
 
 int main() {
@@ -54,7 +51,5 @@ int main() {
   size_t n = sizeof(data) / sizeof(data[0]);
   float result = sum(data, n);
   std::cout << "sum : " << result << std::endl;
-  float result2 = sum(data, n);
-  std::cout << "sum : " << result2 << std::endl;
   return 0;
 }
