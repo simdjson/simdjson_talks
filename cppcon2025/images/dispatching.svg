@@ -1,0 +1,45 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Définir le style -->
+  <style>
+    .box { fill: #e0f7fa; stroke: #0288d1; stroke-width: 2; }
+    .arrow { fill: none; stroke: #0288d1; stroke-width: 2; marker-end: url(#arrowhead); }
+    .text { font-family: Arial, sans-serif; font-size: 14px; fill: #333; }
+    .title { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #333; }
+  </style>
+  
+  <!-- Définir la flèche -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0288d1" />
+    </marker>
+  </defs>
+  
+  <!-- Titre -->
+  <text x="200" y="30" class="title" text-anchor="middle">Runtime dispatching</text>
+  
+  <!-- Boîte pour la fonction sémantique -->
+  <rect x="150" y="60" width="100" height="40" class="box" />
+  <text x="200" y="85" class="text" text-anchor="middle">Function</text>
+  
+  <!-- Flèche vers le dispatching -->
+  <path d="M200 100 V140" class="arrow" />
+  
+  <!-- Boîte pour le dispatching -->
+  <rect x="150" y="140" width="100" height="40" class="box" />
+  <text x="200" y="165" class="text" text-anchor="middle">Dispatching</text>
+  
+  <!-- Flèches vers les implémentations -->
+  <path d="M150 180 L100 220" class="arrow" />
+  <path d="M200 180 V220" class="arrow" />
+  <path d="M250 180 L300 220" class="arrow" />
+  
+  <!-- Boîtes pour les implémentations -->
+  <rect x="70" y="220" width="60" height="40" class="box" />
+  <text x="100" y="245" class="text" text-anchor="middle">SSE2</text>
+  
+  <rect x="170" y="220" width="60" height="40" class="box" />
+  <text x="200" y="245" class="text" text-anchor="middle">AVX2</text>
+  
+  <rect x="270" y="220" width="60" height="40" class="box" />
+  <text x="300" y="245" class="text" text-anchor="middle">AVX-512</text>
+</svg>
