@@ -95,6 +95,16 @@ JSON can be *slow*. E.g., 20 MB/s.
 | AMD Zen 5       |  2024   |    6                      | $4 \times 512$ | 🥇🥇🥇        |
 
 
+
+--- 
+
+# simdjson: Parsing design
+
+- First scan identifies the structural characters, start of all strings at about 10 GB/s using SIMD instructions.
+- Validates Unicode (UTF-8) at 30 GB/s.
+- Rest of parsing relies on index.
+- Allows fast skipping.
+
 ---
 
 
@@ -112,6 +122,10 @@ The simdjson library is found in...
 - Node.js
 - ClickHouse
 - Velox
+- Milvus
+- QuestDB
+- StarRocks
+- ...
 
 <img src="images/nodejs.jpg" width="20%">
 
@@ -586,6 +600,18 @@ You might think "automatic = slow", but with simdjson + reflection:
 
 The generated code is often *faster* than hand-written code!
 
+
+---
+
+# On-Demand: parse only what you need
+
+```cpp
+auto car = doc["Jean-Claude"].get<Car>()
+```
+
+- Seeks `""Jean-Claude"` with index, and then parses directly to `Car`.
+- No intermediate, no extra parsing
+
 ---
 
 # Real-World Benefits
@@ -944,6 +970,9 @@ int g() {
     return x;
 }
 ```
+
+
+
 
 ---
 
