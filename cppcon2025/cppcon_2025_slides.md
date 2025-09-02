@@ -1069,6 +1069,7 @@ How Fast Digit Counting Works
 The Problem: Need to know buffer size before converting number to string
 
 Traditional Approach:
+```cpp
 size_t digit_count(uint64_t v) {
     return std::to_string(v).length();
     // 1. Allocates memory
@@ -1076,8 +1077,10 @@ size_t digit_count(uint64_t v) {
     // 3. Gets length
     // 4. Deallocates string
 }
+```
 
 Our Optimization:
+```cpp
 int fast_digit_count(uint64_t x) {
     // Approximate using bit operations (no division!)
     int y = (19 * int_log2(x) >> 6);
@@ -1088,6 +1091,7 @@ int fast_digit_count(uint64_t x) {
 
     return y + 1;
 }
+```
 
 Zero allocations, no string conversion, just math!
 

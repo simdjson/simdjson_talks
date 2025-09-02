@@ -961,16 +961,17 @@ How Fast Digit Counting Works
 The Problem: Need to know buffer size before converting number to string
 
 Traditional Approach:
-<span class="hljs-function"><span class="hljs-type">size_t</span> <span class="hljs-title">digit_count</span><span class="hljs-params">(<span class="hljs-type">uint64_t</span> v)</span> </span>{
+```<span class="hljs-function">cpp
+<span class="hljs-type">size_t</span> <span class="hljs-title">digit_count</span><span class="hljs-params">(<span class="hljs-type">uint64_t</span> v)</span> </span>{
     <span class="hljs-keyword">return</span> std::<span class="hljs-built_in">to_string</span>(v).<span class="hljs-built_in">length</span>();
     <span class="hljs-comment">// 1. Allocates memory</span>
     <span class="hljs-comment">// 2. Converts entire number to string</span>
     <span class="hljs-comment">// 3. Gets length</span>
     <span class="hljs-comment">// 4. Deallocates string</span>
 }
-
-Our Optimization:
-<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">fast_digit_count</span><span class="hljs-params">(<span class="hljs-type">uint64_t</span> x)</span> </span>{
+</code></pre>
+<p>Our Optimization:</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">fast_digit_count</span><span class="hljs-params">(<span class="hljs-type">uint64_t</span> x)</span> </span>{
     <span class="hljs-comment">// Approximate using bit operations (no division!)</span>
     <span class="hljs-type">int</span> y = (<span class="hljs-number">19</span> * <span class="hljs-built_in">int_log2</span>(x) &gt;&gt; <span class="hljs-number">6</span>);
 
@@ -980,14 +981,11 @@ Our Optimization:
 
     <span class="hljs-keyword">return</span> y + <span class="hljs-number">1</span>;
 }
-
-Zero allocations, no string conversion, just math!
-
-# Optimizations #<span class="hljs-number">4</span> &amp; #<span class="hljs-number">5</span>: Branch Hints &amp; Buffer Growth
-
-**Branch Prediction:**
-```<span class="hljs-function">cpp
-<span class="hljs-title">if</span> <span class="hljs-params">(UNLIKELY(buffer_full))</span> </span>{  <span class="hljs-comment">// CPU knows this is rare</span>
+</code></pre>
+<p>Zero allocations, no string conversion, just math!</p>
+<h1 id="optimizations-4--5-branch-hints--buffer-growth">Optimizations #4 &amp; #5: Branch Hints &amp; Buffer Growth</h1>
+<p><strong>Branch Prediction:</strong></p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-cpp"><span class="hljs-keyword">if</span> (<span class="hljs-built_in">UNLIKELY</span>(buffer_full)) {  <span class="hljs-comment">// CPU knows this is rare</span>
     <span class="hljs-built_in">grow_buffer</span>();
 }
 <span class="hljs-comment">// CPU optimizes for this path</span>
