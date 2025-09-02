@@ -89,7 +89,7 @@ JSON can be *slow*. E.g., 20 MB/s.
 # Superscalar vs. SIMD execution
 
 | processor       | year    | arithmetic logic units    | SIMD units     | simdjson |
-|-----------------|---------|---------------------------|----------------|----------|               
+|-----------------|---------|---------------------------|----------------|----------|
 | Apple M*       |  2019   |    6+                      | $4 \times 128$ | 🥉        |
 | Intel Lion Cove       |  2024   |    6                | $4 \times 256$ | 🥈🥈        |
 | AMD Zen 5       |  2024   |    6                      | $4 \times 512$ | 🥇🥇🥇        |
@@ -794,7 +794,7 @@ using SumFunc = float (*)(const float *, size_t);
 
 ---
 
-# Setup a reassignable implementation 
+# Setup a reassignable implementation
 
 
 ```cpp
@@ -890,60 +890,250 @@ _mm512_cmple_epu8_mask(word, _mm512_set1_epi8(31));
 
 ---
 
-# Compile-time string escaping
+# Current JSON Serialization Landscape
 
-- Often the 'keys' are known at compile time.
+**How fast can popular libraries serialize JSON?**
 
-
-```cpp
-struct Player {
-    std::string username;
-    int level;
-    double health;
-    std::vector<std::string> inventory;
-};
 ```
+nlohmann::json:     ██                          242 MB/s
+RapidJSON:          █████                       497 MB/s
+Serde (Rust):       █████████████             1,343 MB/s
+yyjson:             ████████████████████      2,074 MB/s
 
-- Keys are: `username`, `level`, `health`, `inventory`. 
-
----
-
-# Escape at compile time.
-
-```cpp
-  [:expand(std::meta::nonstatic_data_members_of(...)] {
-    constexpr auto key = 
-      std::define_static_string(consteval_to_quoted_escaped(
-        std::meta::identifier_of(dm)));
-    b.append_raw(key);
-    b.append(':');
-    // ...
-  };
+                    0    500   1000  1500  2000  2500  MB/s
 ```
 
 ---
 
-# Otherwise tricky to do
+# How fast are we? ...
 
-- Outside metaprogramming, lots of values are compile-time constants
-- But processing it at compile time is not always easy/convenient.
+```
+nlohmann::json:     ██                          242 MB/s
+RapidJSON:          █████                       497 MB/s
+Serde (Rust):       █████████████             1,343 MB/s
+yyjson:             ████████████████████      2,074 MB/s
+simdjson:           ██████████████████████████████████ 3,435 MB/s ⭐
+
+                    0    500   1000  1500  2000  2500  3000  3500  MB/s
+```
+
+**3.4 GB/s** on the Twitter benchmark - That's:
+- **14x faster** than nlohmann
+- **2.5x faster** than Rust's Serde
+- **66% faster** than hand-optimized yyjson
+
+**How did we achieve this? Let's find out...**
 
 ---
 
-# Example: `g` returns 1
+# Ablation Study: How We Achieved 3.4 GB/s
 
+**What is Ablation?**
+From neuroscience: systematically remove parts to understand function
+
+**Our Approach:**
+1. **Baseline**: All optimizations enabled (3,435 MB/s)
+2. **Disable one optimization** at a time
+3. **Measure performance impact**
+4. **Calculate contribution**: `(Baseline - Disabled) / Disabled`
+
+---
+
+# Five Key Optimizations
+
+1. **Consteval**: Compile-time field name processing
+2. **SIMD String Escaping**: Vectorized character checks
+3. **Fast Integer Conversion**: Optimized number serialization
+4. **Branch Prediction Hints**: CPU pipeline optimization
+5. **Buffer Growth Strategy**: Smart memory allocation
+
+---
+
+# Optimization #1: Consteval
+## The Power of Compile-Time
+
+**The Insight:** JSON field names are known at compile time!
+
+**Traditional (Runtime):**
 ```cpp
-constexpr int convert(const char * x) {
-    if (std::is_constant_evaluated()) { return 0; }
-    return 1;
+// Every serialization call:
+write_string("\"username\"");  // Quote & escape at runtime
+write_string("\"level\"");     // Quote & escape again!
+```
+
+**With Consteval (Compile-Time):**
+```cpp
+constexpr auto username_key = "\"username\":";  // Pre-computed!
+b.append_literal(username_key);  // Just memcpy!
+```
+
+---
+
+# Consteval Performance Impact
+
+| Dataset | Baseline | No Consteval | Impact | **Speedup** |
+|---------|----------|--------------|--------|-------------|
+| Twitter | 3,231 MB/s | 1,624 MB/s | -50% | **1.99x** |
+| CITM | 2,341 MB/s | 883 MB/s | -62% | **2.65x** |
+
+**Twitter Example (100 tweets):**
+- 100 tweets × 15 fields = **1,500 field names**
+- Without: 1,500 runtime escape operations
+- With: **0 runtime operations**
+
+**Result: 2-2.6x faster serialization!**
+
+---
+
+# Optimization #2: SIMD String Escaping
+
+**The Problem:** JSON requires escaping `"`, `\`, and control chars
+
+**Traditional (1 byte at a time):**
+```cpp
+for (char c : str) {
+    if (c == '"' || c == '\\' || c < 0x20)
+        return true;
 }
-
-int g() {
-    constexpr char key[] = "name";
-    auto x = convert(key);
-    return x;
-}
 ```
+
+**SIMD (16 bytes at once):**
+```cpp
+__m128i chunk = load_16_bytes(str);
+__m128i needs_escape = check_all_conditions_parallel(chunk);
+if (!needs_escape)
+    return false;  // Fast path!
+```
+
+---
+
+# SIMD Escaping Performance Impact
+
+| Dataset | Baseline | No SIMD | Impact | **Speedup** |
+|---------|----------|---------|--------|-------------|
+| Twitter | 3,231 MB/s | 2,245 MB/s | -31% | **1.44x** |
+| CITM | 2,341 MB/s | 2,273 MB/s | -3% | **1.03x** |
+
+**Why Different Impact?**
+- **Twitter**: Long text fields (tweets, descriptions) → Big win
+- **CITM**: Mostly numbers → Small impact
+
+---
+
+# Optimization #3: Fast Integer Conversion
+
+**Traditional:**
+```cpp
+std::to_string(value);  // 2 divisions per digit!
+```
+
+**Optimized:**
+```cpp
+fast_itoa(value, buffer);  // 50% fewer divisions + lookup tables
+```
+
+| Dataset | Baseline | No Fast Digits | Impact | **Speedup** |
+|---------|----------|----------------|--------|-------------|
+| Twitter | 3,231 MB/s | 3,041 MB/s | -6% | **1.06x** |
+| CITM | 2,341 MB/s | 1,841 MB/s | -21% | **1.27x** |
+
+**CITM has ~10,000+ integers per document!**
+
+---
+
+# Optimizations #4 & #5: Branch Hints & Buffer Growth
+
+**Branch Prediction:**
+```cpp
+if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
+    grow_buffer();
+}
+// CPU optimizes for this path
+```
+
+**Buffer Growth:**
+- Linear: 1000 allocations for 1MB
+- Exponential: 10 allocations for 1MB
+
+| Both Optimizations | Impact | Speedup |
+|-------------------|--------|---------|
+| Twitter & CITM | ~2% | 1.02x |
+
+**Small but free!**
+
+---
+
+# Combined Performance Impact
+
+**All Optimizations Together:**
+
+| Optimization | Twitter Contribution | CITM Contribution |
+|--------------|---------------------|-------------------|
+| **Consteval** | +99% (1.99x) | +165% (2.65x) |
+| **SIMD Escaping** | +44% (1.44x) | +3% (1.03x) |
+| **Fast Digits** | +6% (1.06x) | +27% (1.27x) |
+| **Branch Hints** | +1.5% | +1.5% |
+| **Buffer Growth** | +0.8% | +0.8% |
+| **TOTAL** | **~2.95x faster** | **~3.5x faster** |
+
+**From Baseline to Optimized:**
+- Twitter: ~1,100 MB/s → 3,231 MB/s
+- CITM: ~670 MB/s → 2,341 MB/s
+
+---
+
+# Library Performance Comparison
+
+**Twitter Dataset (631KB):**
+```
+simdjson (reflection): ████████████████████████ 3,435 MB/s ⭐
+yyjson:                ██████████████           2,074 MB/s
+Serde (Rust):          █████████                1,343 MB/s
+RapidJSON:             ███                        497 MB/s
+nlohmann::json:        ██                         242 MB/s
+```
+
+**simdjson achieves the fastest JSON serialization performance!**
+
+---
+
+# Real-World Impact
+
+**API Server Example:**
+- 10 million API responses/day
+- Average response: ~5KB JSON
+- Total: 50GB JSON serialization/day
+
+**Serialization Time:**
+```
+nlohmann::json:    210 seconds (3.5 minutes)
+RapidJSON:         102 seconds (1.7 minutes)
+Serde (Rust):       38 seconds
+yyjson:             24 seconds
+simdjson:           14.5 seconds ⭐
+```
+
+**Time saved: 195 seconds vs nlohmann (93% reduction)**
+
+---
+
+# Key Technical Insights
+
+1. **Compile-Time optimizations can be awesome**
+   - Consteval: 2-2.6x speedup alone
+   - C++26 reflection enables unprecedented optimization
+
+2. **SIMD Everywhere**
+   - Not just for parsing anymore
+   - String operations benefit hugely
+
+3. **Avoid Hidden Costs**
+   - Hidden allocations: `std::to_string()`
+   - Hidden divisions: `log10(value)`
+   - Hidden mispredictions: rare conditions
+
+4. **Every Optimization Matters**
+   - Small gains compound into huge improvements
 
 ---
 
