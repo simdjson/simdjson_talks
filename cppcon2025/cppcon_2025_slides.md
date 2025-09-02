@@ -96,7 +96,7 @@ JSON can be *slow*. E.g., 20 MB/s.
 
 
 
---- 
+---
 
 # simdjson: Parsing design
 
@@ -1161,10 +1161,6 @@ simdjson:           14.5 seconds ⭐
 
 4. **Every Optimization Matters**
    - Small gains compound into huge improvements
-=======
-
-
->>>>>>> 49da663992d387f96e55a696cd7203fb469b370a
 
 ---
 
