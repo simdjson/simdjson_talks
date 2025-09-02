@@ -1047,26 +1047,49 @@ if (!needs_escape)
 
 ---
 
-# Optimization #3: Fast Integer Conversion
+# Optimization #3: Fast Digit Counting
 
 **Traditional:**
 ```cpp
-std::to_string(value);  // 2 divisions per digit!
-```
+std::to_string(value).length();  // Allocates string just to count digits!
 
-**Optimized:**
-```cpp
-fast_itoa(value, buffer);  // 50% fewer divisions + lookup tables
-```
+Optimized:
+fast_digit_count(value);  // Bit operations + lookup table, no allocation
 
-| Dataset | Baseline | No Fast Digits | Impact | **Speedup** |
-|---------|----------|----------------|--------|-------------|
-| Twitter | 3,231 MB/s | 3,041 MB/s | -6% | **1.06x** |
-| CITM | 2,341 MB/s | 1,841 MB/s | -21% | **1.27x** |
+| Dataset | Baseline   | No Fast Digits | Impact | Speedup |
+|---------|------------|----------------|--------|---------|
+| Twitter | 3,231 MB/s | 3,041 MB/s     | -6%    | 1.06x   |
+| CITM    | 2,341 MB/s | 1,841 MB/s     | -21%   | 1.27x   |
 
-**CITM has ~10,000+ integers per document!**
+CITM has ~10,000+ numbers needing digit counts!
 
 ---
+How Fast Digit Counting Works
+
+The Problem: Need to know buffer size before converting number to string
+
+Traditional Approach (Disabled by NO_FAST_DIGITS):
+size_t digit_count(uint64_t v) {
+    return std::to_string(v).length();
+    // 1. Allocates memory
+    // 2. Converts entire number to string
+    // 3. Gets length
+    // 4. Deallocates string
+}
+
+Our Optimization:
+int fast_digit_count(uint64_t x) {
+    // Approximate using bit operations (no division!)
+    int y = (19 * int_log2(x) >> 6);
+
+    // Refine using lookup table
+    static uint64_t table[] = {9, 99, 999, 9999, ...};
+    y += x > table[y];
+
+    return y + 1;
+}
+
+Zero allocations, no string conversion, just math!
 
 # Optimizations #4 & #5: Branch Hints & Buffer Growth
 
