@@ -1068,7 +1068,7 @@ How Fast Digit Counting Works
 
 The Problem: Need to know buffer size before converting number to string
 
-Traditional Approach (Disabled by NO_FAST_DIGITS):
+Traditional Approach:
 size_t digit_count(uint64_t v) {
     return std::to_string(v).length();
     // 1. Allocates memory
