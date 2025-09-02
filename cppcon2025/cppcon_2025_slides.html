@@ -958,10 +958,10 @@ CITM has ~<span class="hljs-number">10</span>,<span class="hljs-number">000</spa
 ---
 How Fast Digit Counting Works
 
-The Problem: <span class="hljs-function">Need to know buffer size before converting number to string
+The Problem: Need to know buffer size before converting number to string
 
-Traditional <span class="hljs-title">Approach</span> <span class="hljs-params">(Disabled by NO_FAST_DIGITS)</span>:
-size_t digit_count(uint64_t v) {</span>
+Traditional Approach:
+<span class="hljs-function"><span class="hljs-type">size_t</span> <span class="hljs-title">digit_count</span><span class="hljs-params">(<span class="hljs-type">uint64_t</span> v)</span> </span>{
     <span class="hljs-keyword">return</span> std::<span class="hljs-built_in">to_string</span>(v).<span class="hljs-built_in">length</span>();
     <span class="hljs-comment">// 1. Allocates memory</span>
     <span class="hljs-comment">// 2. Converts entire number to string</span>
