@@ -298,8 +298,10 @@ Player load_player(const std::string& json_str) {
 
 ---
 
+# Benefits
+
 - **No manual field mapping**
-- **No maintenance burden**
+- **No maintenance burden**  
 - **Handles nested structures automatically**
 - **Performance tuned by the library**
 
@@ -918,37 +920,15 @@ _mm512_cmple_epu8_mask(word, _mm512_set1_epi8(31));
 
 # Current JSON Serialization Landscape
 
-**How fast can popular libraries serialize JSON?**
-
-```
-nlohmann::json:     ██                          242 MB/s
-RapidJSON:          █████                       497 MB/s
-Serde (Rust):       █████████████             1,343 MB/s
-yyjson:             ████████████████████      2,074 MB/s
-
-                    0    500   1000  1500  2000  2500  MB/s
-```
+<img src="images/perf_landscape.png" width="85%"/>
 
 ---
 
 # How fast are we? ...
 
-```
-nlohmann::json:     ██                          242 MB/s
-RapidJSON:          █████                       497 MB/s
-Serde (Rust):       █████████████             1,343 MB/s
-yyjson:             ████████████████████      2,074 MB/s
-simdjson:           ██████████████████████████████████ 3,435 MB/s ⭐
+<img src="images/perf_with_simdjson.png" width="80%"/>
 
-                    0    500   1000  1500  2000  2500  3000  3500  MB/s
-```
-
-**3.4 GB/s** on the Twitter benchmark - That's:
-- **14x faster** than nlohmann
-- **2.5x faster** than Rust's Serde
-- **66% faster** than hand-optimized yyjson
-
-**How did we achieve this? Let's find out...**
+**3.4 GB/s** - 14x faster than nlohmann, 2.5x faster than Serde!
 
 ---
 
@@ -1023,7 +1003,6 @@ for (char c : str) {
 }
 ```
 
-<<<<<<< HEAD
 **SIMD (16 bytes at once):**
 ```cpp
 __m128i chunk = load_16_bytes(str);
@@ -1051,49 +1030,22 @@ if (!needs_escape)
 
 **Traditional:**
 ```cpp
-std::to_string(value).length();  // Allocates string just to count digits!
+std::to_string(value).length();  // Allocates string just to count!
+```
 
-Optimized:
-fast_digit_count(value);  // Bit operations + lookup table, no allocation
+**Optimized:**
+```cpp
+fast_digit_count(value);  // Bit operations + lookup table
+```
 
-| Dataset | Baseline   | No Fast Digits | Impact | Speedup |
-|---------|------------|----------------|--------|---------|
-| Twitter | 3,231 MB/s | 3,041 MB/s     | -6%    | 1.06x   |
-| CITM    | 2,341 MB/s | 1,841 MB/s     | -21%   | 1.27x   |
+| Dataset | Baseline | No Fast Digits | **Speedup** |
+|---------|----------|----------------|-------------|
+| Twitter | 3,231 MB/s | 3,041 MB/s | **1.06x** |
+| CITM | 2,341 MB/s | 1,841 MB/s | **1.27x** |
 
-CITM has ~10,000+ numbers needing digit counts!
+**CITM has ~10,000+ integers!**
 
 ---
-How Fast Digit Counting Works
-
-The Problem: Need to know buffer size before converting number to string
-
-Traditional Approach:
-```cpp
-size_t digit_count(uint64_t v) {
-    return std::to_string(v).length();
-    // 1. Allocates memory
-    // 2. Converts entire number to string
-    // 3. Gets length
-    // 4. Deallocates string
-}
-```
-
-Our Optimization:
-```cpp
-int fast_digit_count(uint64_t x) {
-    // Approximate using bit operations (no division!)
-    int y = (19 * int_log2(x) >> 6);
-
-    // Refine using lookup table
-    static uint64_t table[] = {9, 99, 999, 9999, ...};
-    y += x > table[y];
-
-    return y + 1;
-}
-```
-
-Zero allocations, no string conversion, just math!
 
 # Optimizations #4 & #5: Branch Hints & Buffer Growth
 
@@ -1138,16 +1090,7 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
 
 # Library Performance Comparison
 
-**Twitter Dataset (631KB):**
-```
-simdjson (reflection): ████████████████████████ 3,435 MB/s ⭐
-yyjson:                ██████████████           2,074 MB/s
-Serde (Rust):          █████████                1,343 MB/s
-RapidJSON:             ███                        497 MB/s
-nlohmann::json:        ██                         242 MB/s
-```
-
-**simdjson achieves the fastest JSON serialization performance!**
+<img src="images/perf_comparison.png" width="85%"/>
 
 ---
 
