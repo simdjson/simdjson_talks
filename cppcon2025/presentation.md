@@ -2,6 +2,7 @@
 marp: true
 theme: default
 class: lead
+title: Reflection-based JSON in C++ at Gigabytes per Second
 paginate: true
 backgroundColor: #fff
 ---
@@ -10,8 +11,8 @@ backgroundColor: #fff
 
 **CppCon 2025**
 
-Daniel Lemire & Francisco Geiman Thiesen
-*daniel@lemire.me, franciscogthiesen@gmail.com*
+- Daniel Lemire, *University of Quebec* :canada:
+- Francisco Geiman Thiesen, *Microsoft* :us:
 
 ---
 
