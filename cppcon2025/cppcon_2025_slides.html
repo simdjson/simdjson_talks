@@ -436,10 +436,12 @@ Player p = simdjson::<span class="hljs-built_in">from</span>&lt;Player&gt;(runti
     simdjson::ondemand::object obj;
     <span class="hljs-keyword">auto</span> er = json_value.<span class="hljs-built_in">get_object</span>().<span class="hljs-built_in">get</span>(obj);
     <span class="hljs-keyword">if</span>(er) { <span class="hljs-keyword">return</span> er; }
+    <span class="hljs-comment">// capture the attributes:</span>
+    <span class="hljs-keyword">constexpr</span> <span class="hljs-keyword">auto</span> members = std::<span class="hljs-built_in">define_static_array</span>(std::meta::<span class="hljs-built_in">nonstatic_data_members_of</span>(^^T,
+       std::meta::access_context::<span class="hljs-built_in">unchecked</span>()));
 
-    <span class="hljs-comment">// This [:expand:] happens at COMPILE TIME</span>
-    <span class="hljs-comment">// It literally generates code for each member</span>
-    [:<span class="hljs-built_in">expand</span>(std::meta::<span class="hljs-built_in">nonstatic_data_members_of</span>(^^T)):] &gt;&gt; [&amp;]&lt;<span class="hljs-keyword">auto</span> member&gt;() {
+    <span class="hljs-comment">// This for loop happens at COMPILE TIME</span>
+    <span class="hljs-function"><span class="hljs-keyword">template</span> <span class="hljs-title">for</span> <span class="hljs-params">(<span class="hljs-keyword">constexpr</span> <span class="hljs-keyword">auto</span> member : members)</span> </span>{
         <span class="hljs-comment">// These are compile-time constants</span>
         <span class="hljs-keyword">constexpr</span> std::string_view field_name = std::meta::<span class="hljs-built_in">identifier_of</span>(member);
         <span class="hljs-keyword">constexpr</span> <span class="hljs-keyword">auto</span> member_type = std::meta::<span class="hljs-built_in">type_of</span>(member);
@@ -456,12 +458,12 @@ Player p = simdjson::<span class="hljs-built_in">from</span>&lt;Player&gt;(runti
 </code></pre>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="38" data-paginate="true" data-theme="default" lang="C" data-marpit-pagination="38" style="--paginate:true;--theme:default;" data-marpit-pagination-total="80">
-<h1 id="the-expand-statement">The [:expand:] Statement</h1>
-<p>The <code>[:expand:]</code> statement is the key:</p>
+<h1 id="the-template-for-statement">The template for Statement</h1>
+<p>The <code>template for</code> statement is the key:</p>
 <ul>
 <li>It's like a <strong>compile-time for-loop</strong></li>
-<li>Generates code for each struct member</li>
-<li>By the time your program runs, all reflection has been &quot;expanded&quot; into normal C++ code</li>
+<li>E.g., it generates code for each struct member</li>
+<li>By the time your program runs, all reflection has been <em>expanded</em> into normal C++ code</li>
 </ul>
 <p>This means:</p>
 <ul>

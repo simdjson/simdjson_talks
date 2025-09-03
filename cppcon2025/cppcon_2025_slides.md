@@ -491,10 +491,12 @@ error_code deserialize(auto& json_value, T& out) {
     simdjson::ondemand::object obj;
     auto er = json_value.get_object().get(obj);
     if(er) { return er; }
+    // capture the attributes:
+    constexpr auto members = std::define_static_array(std::meta::nonstatic_data_members_of(^^T,
+       std::meta::access_context::unchecked()));
 
-    // This [:expand:] happens at COMPILE TIME
-    // It literally generates code for each member
-    [:expand(std::meta::nonstatic_data_members_of(^^T)):] >> [&]<auto member>() {
+    // This for loop happens at COMPILE TIME
+    template for (constexpr auto member : members) {
         // These are compile-time constants
         constexpr std::string_view field_name = std::meta::identifier_of(member);
         constexpr auto member_type = std::meta::type_of(member);
@@ -512,13 +514,14 @@ error_code deserialize(auto& json_value, T& out) {
 
 ---
 
-# The [:expand:] Statement
+ 
+# The template for Statement
 
-The `[:expand:]` statement is the key:
+The `template for` statement is the key:
 
 - It's like a **compile-time for-loop**
-- Generates code for each struct member
-- By the time your program runs, all reflection has been "expanded" into normal C++ code
+- E.g., it generates code for each struct member
+- By the time your program runs, all reflection has been *expanded* into normal C++ code
 
 This means:
 - **Zero runtime overhead**
