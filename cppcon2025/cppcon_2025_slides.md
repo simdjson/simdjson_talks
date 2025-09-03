@@ -1091,12 +1091,6 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
 
 ---
 
-# Library Performance Comparison
-
-<img src="images/perf_comparison.png" width="85%"/>
-
----
-
 # Real-World Impact
 
 **API Server Example:**
