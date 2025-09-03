@@ -132,6 +132,49 @@ The simdjson library is found in...
 
 ---
 
+# Conventional JSON parsing (DOM)
+
+Start with JSON.
+```json
+{"name":"Scooby", "age": 3, "friends":["Fred", "Daphne", "Velma"]}
+```
+
+Parses (everything) to Document-Object-Model:
+<img src="images/dom.svg" />
+
+Copies to user data structure.
+
+
+---
+
+# Limitations of conventional parsing
+
+- Tends to parse everything at once even when not needed.
+- Requires an intermediate data structure (DOM).
+- Can't specialize (e.g., treat `"123"` as a number)
+
+
+-- 
+
+# On-Demand
+
+Can load a multi-kilobyte file and only parse a narrow segment from an fast index.
+
+```cpp
+#include <iostream>
+#include "simdjson.h"
+using namespace simdjson;
+int main(void) {
+    ondemand::parser parser;
+    padded_string json = padded_string::load("twitter.json");
+    ondemand::document tweets = parser.iterate(json);
+    std::cout << uint64_t(tweets["search_metadata"]["count"]) << " results." << std::endl;
+}
+```
+
+
+---
+
 # Automate the serialization/deserialization process.
 
 
@@ -605,17 +648,6 @@ You might think "automatic = slow", but with simdjson + reflection:
 
 The generated code is often *faster* than hand-written code!
 
-
----
-
-# On-Demand: parse only what you need
-
-```cpp
-auto car = doc["Jean-Claude"].get<Car>()
-```
-
-- Seeks `""Jean-Claude"` with index, and then parses directly to `Car`.
-- No intermediate, no extra parsing
 
 ---
 
