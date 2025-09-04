@@ -94,7 +94,15 @@ JSON can be *slow*. E.g., 20 MB/s.
 | Intel Lion Cove       |  2024   |    6                | $4 \times 256$ | 🥈🥈        |
 | AMD Zen 5       |  2024   |    6                      | $4 \times 512$ | 🥇🥇🥇        |
 
+---
 
+# SIMD support in simdjson
+
+- x64: SSSE3 (128-bit), AVX-2 (256-bit), AVX-512 (512-bit)
+- ARM NEON
+- POWER (PPC64)
+- Loongson: LSX (128-bit) and LASX (256-bit)
+- RISC-V: *upcoming*
 
 ---
 
