@@ -54,9 +54,18 @@ CppCon 2025
 
 # JSON downside?
 
-JSON can be *slow*. E.g., 20 MB/s.
+Reading and writing JSON can be *slow*. E.g., 20 MB/s to 200 MB/s.
 
-- Much slower than disk or network
+- Slower than fast disks or fast networks
+
+
+---
+
+
+<img src="images/gwen.jpeg" width="55%" />
+
+Source: Gwen (Chen) Shapira
+
 
 ---
 
