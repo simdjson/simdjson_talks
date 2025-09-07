@@ -958,13 +958,13 @@ _mm512_cmple_epu8_mask(word, _mm512_set1_epi8(31));
 
 ---
 
-# Ablation Study: How We Achieved 3.4 GB/s
+# Ablation Study: How We Achieved 3.2 GB/s
 
 **What is Ablation?**
 From neuroscience: systematically remove parts to understand function
 
-**Our Approach:**
-1. **Baseline**: All optimizations enabled (3,435 MB/s)
+**Our Approach (Apple Silicon M2):**
+1. **Baseline**: All optimizations enabled (3,211 MB/s)
 2. **Disable one optimization** at a time
 3. **Measure performance impact**
 4. **Calculate contribution**: `(Baseline - Disabled) / Disabled`
@@ -1001,12 +1001,12 @@ b.append_literal(username_key);  // Just memcpy!
 
 ---
 
-# Consteval Performance Impact
+# Consteval Performance Impact (Apple Silicon)
 
 | Dataset | Baseline | No Consteval | Impact | **Speedup** |
 |---------|----------|--------------|--------|-------------|
-| Twitter | 3,231 MB/s | 1,624 MB/s | -50% | **1.99x** |
-| CITM | 2,341 MB/s | 883 MB/s | -62% | **2.65x** |
+| Twitter | 3,211 MB/s | 1,607 MB/s | -50% | **2.00x** |
+| CITM | 2,360 MB/s | 978 MB/s | -59% | **2.41x** |
 
 **Twitter Example (100 tweets):**
 - 100 tweets × 15 fields = **1,500 field names**
@@ -1039,12 +1039,12 @@ if (!needs_escape)
 
 ---
 
-# SIMD Escaping Performance Impact
+# SIMD Escaping Performance Impact (Apple Silicon)
 
 | Dataset | Baseline | No SIMD | Impact | **Speedup** |
 |---------|----------|---------|--------|-------------|
-| Twitter | 3,231 MB/s | 2,245 MB/s | -31% | **1.44x** |
-| CITM | 2,341 MB/s | 2,273 MB/s | -3% | **1.03x** |
+| Twitter | 3,211 MB/s | 2,269 MB/s | -29% | **1.42x** |
+| CITM | 2,360 MB/s | 2,259 MB/s | -4% | **1.04x** |
 
 **Why Different Impact?**
 - **Twitter**: Long text fields (tweets, descriptions) → Big win
@@ -1066,8 +1066,8 @@ fast_digit_count(value);  // Bit operations + lookup table
 
 | Dataset | Baseline | No Fast Digits | **Speedup** |
 |---------|----------|----------------|-------------|
-| Twitter | 3,231 MB/s | 3,041 MB/s | **1.06x** |
-| CITM | 2,341 MB/s | 1,841 MB/s | **1.27x** |
+| Twitter | 3,211 MB/s | 3,035 MB/s | **1.06x** |
+| CITM | 2,360 MB/s | 1,767 MB/s | **1.34x** |
 
 **CITM has ~10,000+ integers!**
 
@@ -1089,7 +1089,7 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
 
 | Both Optimizations | Impact | Speedup |
 |-------------------|--------|---------|
-| Twitter & CITM | ~2% | 1.02x |
+| Twitter & CITM | ~1% | 1.01x |
 
 **Small but free!**
 
@@ -1101,16 +1101,16 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
 
 | Optimization | Twitter Contribution | CITM Contribution |
 |--------------|---------------------|-------------------|
-| **Consteval** | +99% (1.99x) | +165% (2.65x) |
-| **SIMD Escaping** | +44% (1.44x) | +3% (1.03x) |
-| **Fast Digits** | +6% (1.06x) | +27% (1.27x) |
-| **Branch Hints** | +1.5% | +1.5% |
-| **Buffer Growth** | +0.8% | +0.8% |
-| **TOTAL** | **~2.95x faster** | **~3.5x faster** |
+| **Consteval** | +100% (2.00x) | +141% (2.41x) |
+| **SIMD Escaping** | +42% (1.42x) | +4% (1.04x) |
+| **Fast Digits** | +6% (1.06x) | +34% (1.34x) |
+| **Branch Hints** | +1% | +5% |
+| **Buffer Growth** | -0.4% | +2% |
+| **TOTAL** | **~2.9x faster** | **~3.4x faster** |
 
 **From Baseline to Optimized:**
-- Twitter: ~1,100 MB/s → 3,231 MB/s
-- CITM: ~670 MB/s → 2,341 MB/s
+- Twitter: ~1,100 MB/s → 3,211 MB/s
+- CITM: ~700 MB/s → 2,360 MB/s
 
 ---
 
