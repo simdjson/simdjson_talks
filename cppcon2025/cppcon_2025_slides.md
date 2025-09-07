@@ -171,7 +171,7 @@ Copies to user data structure.
 - Can't specialize (e.g., treat `"123"` as a number)
 
 
--- 
+--
 
 # On-Demand
 
@@ -361,7 +361,7 @@ Player load_player(const std::string& json_str) {
 # Benefits
 
 - **No manual field mapping**
-- **No maintenance burden**  
+- **No maintenance burden**
 - **Handles nested structures automatically**
 - **Performance tuned by the library**
 
@@ -574,7 +574,7 @@ error_code deserialize(auto& json_value, T& out) {
 
 ---
 
- 
+
 # The template for Statement
 
 The `template for` statement is the key:
@@ -608,32 +608,6 @@ struct Player {
 std::string json = R"({"username":"Alice","level":42,"health":100.0})";
 Player p = simdjson::from<Player>(json);
 // Runtime values flow through compile-time generated code
-```
-
----
-
-# Compile-Time Safety: Catching Errors Before They Run
-
-```cpp
-// ❌ COMPILE ERROR: Type mismatch detected
-struct BadPlayer {
-    int username;  // Oops, should be string!
-};
-// simdjson::from<BadPlayer>(json) won't compile if JSON has string
-
-// ❌ COMPILE ERROR: Non-serializable type
-struct InvalidType {
-    std::thread t;  // Threads can't be serialized!
-};
-// simdjson::to_json(InvalidType{}) fails at compile time
-
-// ✅ COMPILE SUCCESS: All types are serializable
-struct GoodType {
-    std::vector<int> numbers;
-    std::map<std::string, double> scores;
-    std::optional<std::string> nickname;
-};
-// All standard containers work automatically!
 ```
 
 ---
