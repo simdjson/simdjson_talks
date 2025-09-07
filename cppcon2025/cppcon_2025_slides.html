@@ -811,12 +811,12 @@ _mm512_cmple_epu8_mask(word, _mm512_set1_epi8(<span class="hljs-number">31</span
 <p><strong>3.4 GB/s</strong> - 14x faster than nlohmann, 2.5x faster than Serde!</p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="69" data-paginate="true" data-theme="default" lang="C" data-marpit-pagination="69" style="--paginate:true;--theme:default;" data-marpit-pagination-total="81">
-<h1 id="ablation-study-how-we-achieved-34-gbs">Ablation Study: How We Achieved 3.4 GB/s</h1>
+<h1 id="ablation-study-how-we-achieved-32-gbs">Ablation Study: How We Achieved 3.2 GB/s</h1>
 <p><strong>What is Ablation?</strong><br />
 From neuroscience: systematically remove parts to understand function</p>
-<p><strong>Our Approach:</strong></p>
+<p><strong>Our Approach (Apple Silicon M2):</strong></p>
 <ol>
-<li><strong>Baseline</strong>: All optimizations enabled (3,435 MB/s)</li>
+<li><strong>Baseline</strong>: All optimizations enabled (3,211 MB/s)</li>
 <li><strong>Disable one optimization</strong> at a time</li>
 <li><strong>Measure performance impact</strong></li>
 <li><strong>Calculate contribution</strong>: <code>(Baseline - Disabled) / Disabled</code></li>
@@ -847,7 +847,7 @@ b.<span class="hljs-built_in">append_literal</span>(username_key);  <span class=
 </code></pre>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="72" data-paginate="true" data-theme="default" lang="C" data-marpit-pagination="72" style="--paginate:true;--theme:default;" data-marpit-pagination-total="81">
-<h1 id="consteval-performance-impact">Consteval Performance Impact</h1>
+<h1 id="consteval-performance-impact-apple-silicon">Consteval Performance Impact (Apple Silicon)</h1>
 <table>
 <thead>
 <tr>
@@ -861,17 +861,17 @@ b.<span class="hljs-built_in">append_literal</span>(username_key);  <span class=
 <tbody>
 <tr>
 <td>Twitter</td>
-<td>3,231 MB/s</td>
-<td>1,624 MB/s</td>
+<td>3,211 MB/s</td>
+<td>1,607 MB/s</td>
 <td>-50%</td>
-<td><strong>1.99x</strong></td>
+<td><strong>2.00x</strong></td>
 </tr>
 <tr>
 <td>CITM</td>
-<td>2,341 MB/s</td>
-<td>883 MB/s</td>
-<td>-62%</td>
-<td><strong>2.65x</strong></td>
+<td>2,360 MB/s</td>
+<td>978 MB/s</td>
+<td>-59%</td>
+<td><strong>2.41x</strong></td>
 </tr>
 </tbody>
 </table>
@@ -900,7 +900,7 @@ __m128i needs_escape = <span class="hljs-built_in">check_all_conditions_parallel
 </code></pre>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="74" data-paginate="true" data-theme="default" lang="C" data-marpit-pagination="74" style="--paginate:true;--theme:default;" data-marpit-pagination-total="81">
-<h1 id="simd-escaping-performance-impact">SIMD Escaping Performance Impact</h1>
+<h1 id="simd-escaping-performance-impact-apple-silicon">SIMD Escaping Performance Impact (Apple Silicon)</h1>
 <table>
 <thead>
 <tr>
@@ -914,17 +914,17 @@ __m128i needs_escape = <span class="hljs-built_in">check_all_conditions_parallel
 <tbody>
 <tr>
 <td>Twitter</td>
-<td>3,231 MB/s</td>
-<td>2,245 MB/s</td>
-<td>-31%</td>
-<td><strong>1.44x</strong></td>
+<td>3,211 MB/s</td>
+<td>2,269 MB/s</td>
+<td>-29%</td>
+<td><strong>1.42x</strong></td>
 </tr>
 <tr>
 <td>CITM</td>
-<td>2,341 MB/s</td>
-<td>2,273 MB/s</td>
-<td>-3%</td>
-<td><strong>1.03x</strong></td>
+<td>2,360 MB/s</td>
+<td>2,259 MB/s</td>
+<td>-4%</td>
+<td><strong>1.04x</strong></td>
 </tr>
 </tbody>
 </table>
@@ -954,15 +954,15 @@ __m128i needs_escape = <span class="hljs-built_in">check_all_conditions_parallel
 <tbody>
 <tr>
 <td>Twitter</td>
-<td>3,231 MB/s</td>
-<td>3,041 MB/s</td>
+<td>3,211 MB/s</td>
+<td>3,035 MB/s</td>
 <td><strong>1.06x</strong></td>
 </tr>
 <tr>
 <td>CITM</td>
-<td>2,341 MB/s</td>
-<td>1,841 MB/s</td>
-<td><strong>1.27x</strong></td>
+<td>2,360 MB/s</td>
+<td>1,767 MB/s</td>
+<td><strong>1.34x</strong></td>
 </tr>
 </tbody>
 </table>
@@ -992,8 +992,8 @@ __m128i needs_escape = <span class="hljs-built_in">check_all_conditions_parallel
 <tbody>
 <tr>
 <td>Twitter &amp; CITM</td>
-<td>~2%</td>
-<td>1.02x</td>
+<td>~1%</td>
+<td>1.01x</td>
 </tr>
 </tbody>
 </table>
@@ -1013,40 +1013,40 @@ __m128i needs_escape = <span class="hljs-built_in">check_all_conditions_parallel
 <tbody>
 <tr>
 <td><strong>Consteval</strong></td>
-<td>+99% (1.99x)</td>
-<td>+165% (2.65x)</td>
+<td>+100% (2.00x)</td>
+<td>+141% (2.41x)</td>
 </tr>
 <tr>
 <td><strong>SIMD Escaping</strong></td>
-<td>+44% (1.44x)</td>
-<td>+3% (1.03x)</td>
+<td>+42% (1.42x)</td>
+<td>+4% (1.04x)</td>
 </tr>
 <tr>
 <td><strong>Fast Digits</strong></td>
 <td>+6% (1.06x)</td>
-<td>+27% (1.27x)</td>
+<td>+34% (1.34x)</td>
 </tr>
 <tr>
 <td><strong>Branch Hints</strong></td>
-<td>+1.5%</td>
-<td>+1.5%</td>
+<td>+1%</td>
+<td>+5%</td>
 </tr>
 <tr>
 <td><strong>Buffer Growth</strong></td>
-<td>+0.8%</td>
-<td>+0.8%</td>
+<td>-0.4%</td>
+<td>+2%</td>
 </tr>
 <tr>
 <td><strong>TOTAL</strong></td>
-<td><strong>~2.95x faster</strong></td>
-<td><strong>~3.5x faster</strong></td>
+<td><strong>~2.9x faster</strong></td>
+<td><strong>~3.4x faster</strong></td>
 </tr>
 </tbody>
 </table>
 <p><strong>From Baseline to Optimized:</strong></p>
 <ul>
-<li>Twitter: ~1,100 MB/s → 3,231 MB/s</li>
-<li>CITM: ~670 MB/s → 2,341 MB/s</li>
+<li>Twitter: ~1,100 MB/s → 3,211 MB/s</li>
+<li>CITM: ~700 MB/s → 2,360 MB/s</li>
 </ul>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="78" data-paginate="true" data-theme="default" lang="C" data-marpit-pagination="78" style="--paginate:true;--theme:default;" data-marpit-pagination-total="81">
