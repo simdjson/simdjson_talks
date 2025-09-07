@@ -897,7 +897,7 @@ On first call, `get_sum_fnc()` is modified, and then it will remain constant.
 
 
 ```Cpp
-simple_needs_escaping(std::string_view v) {
+bool simple_needs_escaping(std::string_view v) {
   for (unsigned char c : v) {
     if(json_quotable_character[c]) { return true; }
   }
