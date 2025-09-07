@@ -763,7 +763,7 @@ simdjson::<span class="hljs-built_in">from</span>&lt;T&gt;(json)    <span class=
 <li>In JSON, you must escape control characters, quotes.</li>
 <li>Most strings in practice do not need escaping.</li>
 </ul>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-Cpp"><span class="hljs-built_in">simple_needs_escaping</span>(std::string_view v) {
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-Cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">simple_needs_escaping</span><span class="hljs-params">(std::string_view v)</span> </span>{
   <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> c : v) {
     <span class="hljs-keyword">if</span>(json_quotable_character[c]) { <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>; }
   }
