@@ -43,10 +43,51 @@ std::string grab_weather_data(const std::string& latitude, const std::string& lo
     return response_data;
 }
 
+
+/**
+ * Next we check that we can combine custom types with static reflection.
+ */
+
+
+class MyDate {
+public:
+    void assign(std::string_view str) {
+        date_str = str;
+    }
+    const std::string& to_string() const {
+        return date_str;
+    }
+private:
+    std::string date_str;
+};
+
+namespace simdjson {
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, MyDate& date) {
+    std::string_view str;
+    auto error = val.get_string().get(str);
+    if(error) { return error; }
+    date.assign(str);
+  return simdjson::SUCCESS;
+}
+} // namespace simdjson
+
+struct complicated_weather_data {
+    std::vector<MyDate> time;
+    std::vector<float> temperature_2m;
+    std::vector<float> relative_humidity_2m;
+    std::vector<float> winddirection_10m;
+    std::vector<float> precipitation;
+    std::vector<float> windspeed_10m;
+};
+
+
 int main() {
     std::string weather_data_str = grab_weather_data("45.5017", "-73.5673");
     simdjson::ondemand::parser parser;
     simdjson::ondemand::document doc = parser.iterate(simdjson::pad(weather_data_str));
+
+    // If it is simple enough, static reflection works fine.
     weather_data wd = doc["hourly"].get<weather_data>();
     // Assuming all vectors have the same length
     for (size_t i = 0; i < wd.time.size(); ++i) {
@@ -57,6 +98,19 @@ int main() {
             wd.winddirection_10m[i],
             wd.precipitation[i],
             wd.windspeed_10m[i]);
+    }
+
+    // It won't work with MyDate, so we need  to have a custom deserializer.
+    // complicated weather data
+    complicated_weather_data cwd = doc["hourly"].get<complicated_weather_data>();
+    for (size_t i = 0; i < cwd.time.size(); ++i) {
+        fmt::print("CWD Time: {}, Temperature: {:.1f}°C, Humidity: {:.1f}%, Wind Direction: {:.1f}°, Precipitation: {:.1f}mm, Wind Speed: {:.1f}km/h\n",
+            cwd.time[i].to_string(),
+            cwd.temperature_2m[i],
+            cwd.relative_humidity_2m[i],
+            cwd.winddirection_10m[i],
+            cwd.precipitation[i],
+            cwd.windspeed_10m[i]);
     }
     return EXIT_SUCCESS;
 }
