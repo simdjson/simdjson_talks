@@ -15,7 +15,7 @@ struct Player {
 ## Use docker
 
 ```sh
-./run_docker.sh
+./run_docker.sh bash
 ```
 
 ## Install OpenSLL
