@@ -12,11 +12,28 @@ struct Player {
 };
 ```
 
-## Compilation
+## Use docker
 
 ```sh
-cd software
-cmake -B build
+./run_docker.sh
+```
+
+## Install OpenSLL
+
+Your password is your username.
+
+```
+sudo apt update
+sudo apt-get install libssl-dev -y
+```
+
+## Compilation
+
+While in the `software` directory.
+
+```sh
+
+CXX=clang++ CC=clang cmake -B build
 cmake --build build
 ```
 
@@ -24,7 +41,6 @@ cmake --build build
 
 ```sh
 ./build/player_demo
+./build/webservice
 ```
 
-## Dépendance
-La bibliothèque nlohmann/json est récupérée automatiquement via CMake FetchContent.
