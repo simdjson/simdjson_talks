@@ -175,7 +175,7 @@ Copies to user data structure.
 
 # On-Demand
 
-Can load a multi-kilobyte file and only parse a narrow segment from an fast index.
+Can load a multi-kilobyte file and only parse a narrow segment from a fast index.
 
 ```cpp
 #include <iostream>
