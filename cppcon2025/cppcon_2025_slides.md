@@ -11,7 +11,7 @@ _paginate: false
 ## A Practical Journey
 
 - Daniel Lemire, *University of Quebec* :canada:
-- Francisco Geiman Thiesen, *Microsoft* :us:
+- Francisco Geiman Thiesen, *Microsoft* :brazil: :us:
 
 CppCon 2025
 
