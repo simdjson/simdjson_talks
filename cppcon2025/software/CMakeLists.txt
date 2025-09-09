@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(cppcon2025)
 
-add_compile_options(-freflection -fexpansion-statements 
- $<$<COMPILE_LANGUAGE:CXX>:-stdlib=libc++>
- $<$<COMPILE_LANGUAGE:CXX>:-std=c++26>)
-add_definitions(-DSIMDJSON_STATIC_REFLECTION=1)
-
 add_executable(player_demo main.cpp)
 
 
@@ -21,7 +16,7 @@ CPMAddPackage(
     NAME simdjson
     GITHUB_REPOSITORY simdjson/simdjson
     GIT_TAG 015daad6a95a4f67c08ed5980d24b57be221c38f
-    OPTIONS "SIMDJSON_STATIC_REFLECTION=ON"
+    OPTIONS "SIMDJSON_STATIC_REFLECTION ON"
 )
 
 CPMAddPackage(
@@ -50,4 +45,7 @@ add_executable(webservice webservice.cpp)
 target_link_libraries(webservice PRIVATE libcurl)
 target_link_libraries(webservice PRIVATE fmt::fmt)
 target_link_libraries(webservice PRIVATE simdjson::simdjson)
-#target_compile_definitions(webservice PRIVATE SIMDJSON_STATIC_REFLECTION=1)
+
+
+get_target_property(all_properties simdjson::simdjson PROPERTIES)
+message("Propriétés définies pour simdjson::simdjson : ${all_properties}")
