@@ -1167,6 +1167,29 @@ Welcome to the future of C++ serialization! 🚀
 
 ---
 
+# Thank You!
+
+## Special Recognition
+
+**C++ Reflection Paper Authors**
+- The authors of P2996 for making compile-time reflection a reality
+
+**Compiler Implementation Teams**
+- EDG team for the experimental implementation
+- Contributors to experimental GCC and Clang branches
+- Early adopters testing and providing feedback
+
+**Compiler Explorer Team**
+- Matt Godbolt and contributors
+- Essential for validating our reflection approach
+- Enabling rapid prototyping before integration
+
+**simdjson Community**
+- All contributors and users
+- Your feedback drives our innovation
+
+---
+
 # Questions?
 
 Daniel Lemire and Francisco Geiman Thiesen
