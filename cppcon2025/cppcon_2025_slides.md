@@ -613,21 +613,6 @@ _mm512_cmple_epu8_mask(word, _mm512_set1_epi8(31));
 
 ---
 
-# Runtime dispatching is poor with quick functions
-
-- Calling a fast function like `fast_needs_escaping` without inlining prevents useful optimizations.
-- Runtime dispatching implies a function call!
-
----
-
-# Current solution
-
-- No runtime dispatching (*sad face*).
-- All x64 processors support Pentium 4-level SIMD. Use that in a short function.
-- *Easy* if programmer builds for specific machine (`-march=native`), use fancier tricks.
-
----
-
 # Current JSON Serialization Landscape
 
 <img src="images/perf_landscape.png" width="85%"/>
