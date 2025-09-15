@@ -78,21 +78,21 @@ Source: Gwen (Chen) Shapira
 ---
 
 
-## SIMD
+## SIMD (Single Instruction, multiple data)
 
-- Stands for Single instruction, multiple data
 - Allows us to process 16 (or more) bytes or more with one instruction
 - Supported on all modern CPUs (phone, laptop)
+- <Add a bullet point for language support voted on C++26>
 
 ---
 
-# Superscalar vs. SIMD execution
+# Not all processors are equal
 
-| processor       | year    | arithmetic logic units    | SIMD units     | simdjson |
-|-----------------|---------|---------------------------|----------------|----------|
-| Apple M*       |  2019   |    6+                      | $4 \times 128$ | 🥉        |
-| Intel Lion Cove       |  2024   |    6                | $4 \times 256$ | 🥈🥈        |
-| AMD Zen 5       |  2024   |    6                      | $4 \times 512$ | 🥇🥇🥇        |
+| processor       | year    | arithmetic logic units    | SIMD units     |
+|-----------------|---------|---------------------------|----------------|
+| Apple M*        |  2019   |    6+                     | $4 \times 128$ |
+| Intel Lion Cove |  2024   |    6                      | $4 \times 256$ |
+| AMD Zen 5       |  2024   |    6                      | $4 \times 512$ |
 
 ---
 
@@ -110,8 +110,8 @@ Source: Gwen (Chen) Shapira
 
 - First scan identifies the structural characters, start of all strings at about 10 GB/s using SIMD instructions.
 - Validates Unicode (UTF-8) at 30 GB/s.
-- Rest of parsing relies on index.
-- Allows fast skipping.
+- Rest of parsing relies on the generated index.
+- Allows fast skipping. (Only parse what we need)
 
 ---
 
@@ -137,57 +137,6 @@ The simdjson library is found in...
 
 <img src="images/nodejs.jpg" width="20%">
 
-
----
-
-# Conventional JSON parsing (DOM)
-
-Start with JSON.
-```json
-{"name":"Scooby", "age": 3, "friends":["Fred", "Daphne", "Velma"]}
-```
-
-Parses (everything) to Document-Object-Model:
-<img src="images/dom.svg" />
-
-Copies to user data structure.
-
-
----
-
-# Limitations of conventional parsing
-
-- Tends to parse everything at once even when not needed.
-- Requires an intermediate data structure (DOM).
-- Can't specialize (e.g., treat `"123"` as a number)
-
-
---
-
-# On-Demand
-
-Can load a multi-kilobyte file and only parse a narrow segment from a fast index.
-
-```cpp
-#include <iostream>
-#include "simdjson.h"
-using namespace simdjson;
-int main(void) {
-    ondemand::parser parser;
-    padded_string json = padded_string::load("twitter.json");
-    ondemand::document tweets = parser.iterate(json);
-    std::cout << uint64_t(tweets["search_metadata"]["count"]) << " results." << std::endl;
-}
-```
-
-
----
-
-# Automate the serialization/deserialization process.
-
-
-<img src="images/tofrom.svg" width="100%">
-
 ---
 
 # The Problem
@@ -195,8 +144,9 @@ int main(void) {
 Imagine you're building a game server that needs to persist player data.
 
 
-
 <img src="images/player.svg" width="60%">
+
+
 
 ---
 
@@ -236,23 +186,6 @@ fmt::format(
 
 ---
 
-# With a library (JSON for Modern C++)
-
-Or you might use a library.
-
-```cpp
-std::string to_json(Player& p) {
-  return nlohmann::json{{"username", p.username},
-                        {"level", p.level},
-                        {"health", p.health},
-                        {"inventory", p.inventory}}
-      .dump();
-}
-```
-
-
----
-
 # Manual Deserialization (simdjson)
 
 <!-- The code was really painful to read, this is probably sufficient. -->
@@ -266,19 +199,6 @@ for (auto item : arr) {
     p.inventory.emplace_back(item.get_string());
 }
 ```
-
----
-
-# The Pain Points
-
-This manual approach has several problems:
-
-1. **Repetition**: Every field needs to be handled twice (serialize + deserialize)
-2. **Maintenance Nightmare**: Add a new field? Update both functions!
-3. **Error-Prone**: Typos in field names, forgotten fields, type mismatches
-4. **Boilerplate Explosion**: 30+ lines for a simple 4-field struct
-5. **Performance**: You may fall into performance traps
-
 
 ---
 
@@ -299,11 +219,29 @@ struct Player {
     std::vector<std::string> inventory;
     std::map<std::string, Equipment> equipped;     // New!
     std::vector<Achievement> achievements;         // New!
-    std::optional<std::string> guild_name;        // New!
+    std::optional<std::string> guild_name;         // New!
 };
 ```
 
-**Suddenly you need to write hundreds of lines of serialization code! 😱**
+---
+
+<img src="images/happy_programmer.jpg">
+
+---
+
+# The Pain Points
+
+This manual approach has several problems:
+
+1. **Maintenance Nightmare**: Add a new field? Update both functions!
+2. **Error-Prone**: Typos in field names, forgotten fields, type mismatches
+
+---
+
+# Automate the serialization/deserialization process.
+
+
+<img src="images/tofrom.svg" width="100%">
 
 ---
 
