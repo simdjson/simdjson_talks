@@ -20,20 +20,11 @@ CppCon 2025
 
 # JSON
 
-
 - Portable, simple
-- Douglas Crockford (2001)
-- RFC 8259 (December 2017)
-
-
----
-
-# JSON
-
+- Used by ~97% of API requests. [Landscape of API Traffic 2021 - Cloudflare](https://blog.cloudflare.com/landscape-of-api-traffic/#:~:text=We%20begin%20by%20examining%20the,first%20week%20of%20February%202021)
 - scalar values
-  - strings (controls and quotes must be escaped)
+  - strings (must be escaped)
   - numbers (but not `NaN` or `Inf`)
-  - `true`, `false`, `null`
 - composed values
   - objects (key/value)
   - arrays (list)
@@ -1395,7 +1386,7 @@ Try both: https://godbolt.org/z/1n539e7cq
 
 ## Compile-Time Field Discovery
 ```cpp
-template for (constexpr auto member : 
+template for (constexpr auto member :
               std::meta::nonstatic_data_members_of(^^Car)) {
     // Field names known at compile time!
     // Compiler generates optimal code for each field
@@ -1404,7 +1395,7 @@ template for (constexpr auto member :
 
 ## Result: Pre-computed Constants
 - Field names → 64-bit integers
-- String lengths → compile-time constants  
+- String lengths → compile-time constants
 - Escape sequences → eliminated entirely
 - Buffer sizes → calculated at compile time
 
