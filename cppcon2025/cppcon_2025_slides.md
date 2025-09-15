@@ -238,8 +238,7 @@ This manual approach has several problems:
 
 ---
 
-# Automate the serialization/deserialization process.
-
+# Goal: Seamless Serialization/Deserialization
 
 <img src="images/tofrom.svg" width="100%">
 
@@ -294,92 +293,16 @@ Player load_player(const std::string& json_str) {
 - **Handles nested structures automatically**
 - **Performance tuned by the library**
 
-
-
 ---
 
-# Python
-
-```python
-# Python
-import json
-json_str = json.dumps(player.__dict__)
-player = Player(**json.loads(json_str))
-```
-
-<img src="images/python.png" width="10%"/>
-
-
----
-
-# Python reflection
-
-```Python
-def inspect_object(obj):
-    print(f"Class name: {obj.__class__.__name__}")
-    for attr, value in vars(obj).items():
-        print(f"  {attr}: {value}")
-```
-
-
----
-
-# Go
-
-```Go
-jsonData, err := json.MarshalIndent(player, "", "  ")
-if err != nil {
-	log.Fatalf("Error during serialization: %v", err)
-}
-var deserializedPlayer Player
-err = json.Unmarshal([]byte(jsonStr), &deserializedPlayer)
-```
-
-
-<img src="images/go.svg" />
-
-
----
-
-# Go reflection
-
-- Runtime reflection only
-
-```Go
-    typ := reflect.TypeOf(obj)
-    for i := 0; i < typ.NumField(); i++ {
-        field := typ.Field(i)
-    }
-```
-
-
----
-
-# Java and C#
+# C#
 
 ```C#
 string jsonString = JsonSerializer.Serialize(player, options);
 Player deserializedPlayer = JsonSerializer.Deserialize<Player>(jsonInput, options);
 ```
 
-
-<img src="images/java.png" width="10%"/>
-
 <img src="images/csharp.png" width="10%"/>
-
-
----
-
-# Java and C# reflection
-
-- Runtime reflection only.
-
-
-```java
-Class<?> playerClass = Player.class;
-Object playerInstance = playerClass.getDeclaredConstructor().newInstance();
-Field nameField = playerClass.getDeclaredField("name");
-```
 
 ---
 
@@ -394,16 +317,16 @@ let player: Player = serde_json::from_str(&json_str)?;
 
 <img src="images/rust.png" width="10%" />
 
-
 ---
 
 # Rust reflection
 
 
--  Rust does not have ANY introspection.
+- Rust does not have ANY reflection.
 - You cannot enumerate the methods of a struct. Either at runtime or at compile-time.
-- Rust relies on annotation (serde) followed by re-parsing of the code.
+- Serde relies on annotation followed by re-parsing of the code.
 
+<img src="image/rust_reflection.png">
 
 ---
 
@@ -412,7 +335,7 @@ let player: Player = serde_json::from_str(&json_str)?;
 | language | runtime reflection | compile-time reflection |
 |:---------|:-------------------|:------------------------|
 | C++ 26   |      👎              |       ✅               |
-| Go   |          ✅           |       👎               |
+| Go       |          ✅           |       👎               |
 | Java   |       ✅              |     👎                |
 | C#   |          ✅           |       👎               |
 | Rust   |         👎           |       👎               |
