@@ -434,20 +434,6 @@ Player p = simdjson::from<Player>(json);
 
 ---
 
-# The Bigger Picture
-
-This pattern extends beyond games:
-
-- **REST APIs**: Automatic request/response serialization
-- **Configuration Files**: Type-safe config loading
-- **Message Queues**: Serialize/deserialize messages
-- **Databases**: Object-relational mapping
-- **RPC Systems**: Automatic protocol generation
-
-With C++26 reflection, C++ finally catches up to languages like Rust (serde), Go (encoding/json), and C# (System.Text.Json) in terms of ease of use, but with **better performance** thanks to simdjson's SIMD optimizations.
-
----
-
 # Try It Yourself
 
 ```cpp
