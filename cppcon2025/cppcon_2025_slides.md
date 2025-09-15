@@ -349,8 +349,7 @@ std::string json_str = simdjson::to_json(player);
 Player player = simdjson::from<Player>(json_str);
 ```
 
-- **AT COMPILE TIME**
-- with no extra tooling
+- no extra tooling required
 - no annotation
 
 ---
@@ -397,48 +396,19 @@ Player deserialize_Player(const json& j) {
 # The Actual Reflection Magic
 
 ```cpp
-template <typename T>
-  requires(std::is_class_v<T>)  // For user-defined types
-error_code deserialize(auto& json_value, T& out) {
-    simdjson::ondemand::object obj;
-    auto er = json_value.get_object().get(obj);
-    if(er) { return er; }
-    // capture the attributes:
-    constexpr auto members = std::define_static_array(std::meta::nonstatic_data_members_of(^^T,
-       std::meta::access_context::unchecked()));
+// Simplified snippet, members stores information about the class
+// obtained via std::define_static_array(std::meta::nonstatic_data_members_of(^^T, ...))...
+template for (constexpr auto member : members) {
+    // These are compile-time constants
+    constexpr std::string_view field_name = std::meta::identifier_of(member);
+    constexpr auto member_type = std::meta::type_of(member);
 
-    // This for loop happens at COMPILE TIME
-    template for (constexpr auto member : members) {
-        // These are compile-time constants
-        constexpr std::string_view field_name = std::meta::identifier_of(member);
-        constexpr auto member_type = std::meta::type_of(member);
-
-        // This generates code for each member
-        auto err = obj[field_name].get(out.[:member:]);
-        if (err && err != simdjson::NO_SUCH_FIELD) {
-            return err;
-        }
-    };
-
-    return simdjson::SUCCESS;
+    // This generates code for each member
+    obj[field_name].get(out.[:member:]);
 }
 ```
 
----
-
-
-# The template for Statement
-
-The `template for` statement is the key:
-
-- It's like a **compile-time for-loop**
-- E.g., it generates code for each struct member
-- By the time your program runs, all reflection has been *expanded* into normal C++ code
-
-This means:
-- **Zero runtime overhead**
-- **Full optimization opportunities**
-- **Type safety at compile time**
+See full implementation on [GitHub](https://github.com/simdjson/simdjson/blob/8aae14931d4f3cb0ef529ba5f7e2e34d7bcc8e19/include/simdjson/generic/ondemand/std_deserialize.h#L290)
 
 ---
 
@@ -461,36 +431,6 @@ std::string json = R"({"username":"Alice","level":42,"health":100.0})";
 Player p = simdjson::from<Player>(json);
 // Runtime values flow through compile-time generated code
 ```
-
----
-
-# Zero Overhead: Why It's Fast
-
-Since reflection happens at compile time, there's no runtime penalty:
-
-1. **No runtime type inspection** - everything is known at compile time
-2. **No string comparisons for field names** - they become compile-time constants
-3. **Optimal code generation** - the compiler sees the full picture
-4. **Inline everything** - generated code can be fully optimized
-
-The generated code is often **faster than hand-written code** because:
-- It's consistently optimized
-- No human errors or inefficiencies
-- Leverages simdjson's SIMD parsing throughout
-
----
-
-# Performance: The Best Part
-
-You might think "automatic = slow", but with simdjson + reflection:
-
-- **Compile-time code generation**: No runtime overhead from reflection
-- **SIMD-accelerated parsing**: simdjson uses CPU vector instructions
-- **Zero allocation**: String views and in-place parsing
-- **Throughput**: ~2-4 GB/s on modern hardware
-
-The generated code is often *faster* than hand-written code!
-
 
 ---
 
