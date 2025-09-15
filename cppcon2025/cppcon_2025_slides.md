@@ -20,20 +20,11 @@ CppCon 2025
 
 # JSON
 
-
 - Portable, simple
-- Douglas Crockford (2001)
-- RFC 8259 (December 2017)
-
-
----
-
-# JSON
-
+- Used by ~97% of API requests. [Landscape of API Traffic 2021 - Cloudflare](https://blog.cloudflare.com/landscape-of-api-traffic/#:~:text=We%20begin%20by%20examining%20the,first%20week%20of%20February%202021)
 - scalar values
-  - strings (controls and quotes must be escaped)
+  - strings (must be escaped)
   - numbers (but not `NaN` or `Inf`)
-  - `true`, `false`, `null`
 - composed values
   - objects (key/value)
   - arrays (list)
@@ -87,21 +78,21 @@ Source: Gwen (Chen) Shapira
 ---
 
 
-## SIMD
+## SIMD (Single Instruction, multiple data)
 
-- Stands for Single instruction, multiple data
 - Allows us to process 16 (or more) bytes or more with one instruction
 - Supported on all modern CPUs (phone, laptop)
+- <Add a bullet point for language support voted on C++26>
 
 ---
 
-# Superscalar vs. SIMD execution
+# Not all processors are equal
 
-| processor       | year    | arithmetic logic units    | SIMD units     | simdjson |
-|-----------------|---------|---------------------------|----------------|----------|
-| Apple M*       |  2019   |    6+                      | $4 \times 128$ | 🥉        |
-| Intel Lion Cove       |  2024   |    6                | $4 \times 256$ | 🥈🥈        |
-| AMD Zen 5       |  2024   |    6                      | $4 \times 512$ | 🥇🥇🥇        |
+| processor       | year    | arithmetic logic units    | SIMD units     |
+|-----------------|---------|---------------------------|----------------|
+| Apple M*        |  2019   |    6+                     | $4 \times 128$ |
+| Intel Lion Cove |  2024   |    6                      | $4 \times 256$ |
+| AMD Zen 5       |  2024   |    6                      | $4 \times 512$ |
 
 ---
 
@@ -119,8 +110,8 @@ Source: Gwen (Chen) Shapira
 
 - First scan identifies the structural characters, start of all strings at about 10 GB/s using SIMD instructions.
 - Validates Unicode (UTF-8) at 30 GB/s.
-- Rest of parsing relies on index.
-- Allows fast skipping.
+- Rest of parsing relies on the generated index.
+- Allows fast skipping. (Only parse what we need)
 
 ---
 
@@ -146,57 +137,6 @@ The simdjson library is found in...
 
 <img src="images/nodejs.jpg" width="20%">
 
-
----
-
-# Conventional JSON parsing (DOM)
-
-Start with JSON.
-```json
-{"name":"Scooby", "age": 3, "friends":["Fred", "Daphne", "Velma"]}
-```
-
-Parses (everything) to Document-Object-Model:
-<img src="images/dom.svg" />
-
-Copies to user data structure.
-
-
----
-
-# Limitations of conventional parsing
-
-- Tends to parse everything at once even when not needed.
-- Requires an intermediate data structure (DOM).
-- Can't specialize (e.g., treat `"123"` as a number)
-
-
---
-
-# On-Demand
-
-Can load a multi-kilobyte file and only parse a narrow segment from a fast index.
-
-```cpp
-#include <iostream>
-#include "simdjson.h"
-using namespace simdjson;
-int main(void) {
-    ondemand::parser parser;
-    padded_string json = padded_string::load("twitter.json");
-    ondemand::document tweets = parser.iterate(json);
-    std::cout << uint64_t(tweets["search_metadata"]["count"]) << " results." << std::endl;
-}
-```
-
-
----
-
-# Automate the serialization/deserialization process.
-
-
-<img src="images/tofrom.svg" width="100%">
-
 ---
 
 # The Problem
@@ -204,8 +144,9 @@ int main(void) {
 Imagine you're building a game server that needs to persist player data.
 
 
-
 <img src="images/player.svg" width="60%">
+
+
 
 ---
 
@@ -245,23 +186,6 @@ fmt::format(
 
 ---
 
-# With a library (JSON for Modern C++)
-
-Or you might use a library.
-
-```cpp
-std::string to_json(Player& p) {
-  return nlohmann::json{{"username", p.username},
-                        {"level", p.level},
-                        {"health", p.health},
-                        {"inventory", p.inventory}}
-      .dump();
-}
-```
-
-
----
-
 # Manual Deserialization (simdjson)
 
 <!-- The code was really painful to read, this is probably sufficient. -->
@@ -275,19 +199,6 @@ for (auto item : arr) {
     p.inventory.emplace_back(item.get_string());
 }
 ```
-
----
-
-# The Pain Points
-
-This manual approach has several problems:
-
-1. **Repetition**: Every field needs to be handled twice (serialize + deserialize)
-2. **Maintenance Nightmare**: Add a new field? Update both functions!
-3. **Error-Prone**: Typos in field names, forgotten fields, type mismatches
-4. **Boilerplate Explosion**: 30+ lines for a simple 4-field struct
-5. **Performance**: You may fall into performance traps
-
 
 ---
 
@@ -308,11 +219,28 @@ struct Player {
     std::vector<std::string> inventory;
     std::map<std::string, Equipment> equipped;     // New!
     std::vector<Achievement> achievements;         // New!
-    std::optional<std::string> guild_name;        // New!
+    std::optional<std::string> guild_name;         // New!
 };
 ```
 
-**Suddenly you need to write hundreds of lines of serialization code! 😱**
+---
+
+<img src="images/happy_programmer.jpg">
+
+---
+
+# The Pain Points
+
+This manual approach has several problems:
+
+1. **Maintenance Nightmare**: Add a new field? Update both functions!
+2. **Error-Prone**: Typos in field names, forgotten fields, type mismatches
+
+---
+
+# Goal: Seamless Serialization/Deserialization
+
+<img src="images/tofrom.svg" width="100%">
 
 ---
 
@@ -365,92 +293,16 @@ Player load_player(const std::string& json_str) {
 - **Handles nested structures automatically**
 - **Performance tuned by the library**
 
-
-
 ---
 
-# Python
-
-```python
-# Python
-import json
-json_str = json.dumps(player.__dict__)
-player = Player(**json.loads(json_str))
-```
-
-<img src="images/python.png" width="10%"/>
-
-
----
-
-# Python reflection
-
-```Python
-def inspect_object(obj):
-    print(f"Class name: {obj.__class__.__name__}")
-    for attr, value in vars(obj).items():
-        print(f"  {attr}: {value}")
-```
-
-
----
-
-# Go
-
-```Go
-jsonData, err := json.MarshalIndent(player, "", "  ")
-if err != nil {
-	log.Fatalf("Error during serialization: %v", err)
-}
-var deserializedPlayer Player
-err = json.Unmarshal([]byte(jsonStr), &deserializedPlayer)
-```
-
-
-<img src="images/go.svg" />
-
-
----
-
-# Go reflection
-
-- Runtime reflection only
-
-```Go
-    typ := reflect.TypeOf(obj)
-    for i := 0; i < typ.NumField(); i++ {
-        field := typ.Field(i)
-    }
-```
-
-
----
-
-# Java and C#
+# C#
 
 ```C#
 string jsonString = JsonSerializer.Serialize(player, options);
 Player deserializedPlayer = JsonSerializer.Deserialize<Player>(jsonInput, options);
 ```
 
-
-<img src="images/java.png" width="10%"/>
-
 <img src="images/csharp.png" width="10%"/>
-
-
----
-
-# Java and C# reflection
-
-- Runtime reflection only.
-
-
-```java
-Class<?> playerClass = Player.class;
-Object playerInstance = playerClass.getDeclaredConstructor().newInstance();
-Field nameField = playerClass.getDeclaredField("name");
-```
 
 ---
 
@@ -465,16 +317,16 @@ let player: Player = serde_json::from_str(&json_str)?;
 
 <img src="images/rust.png" width="10%" />
 
-
 ---
 
 # Rust reflection
 
 
--  Rust does not have ANY introspection.
+- Rust does not have ANY reflection.
 - You cannot enumerate the methods of a struct. Either at runtime or at compile-time.
-- Rust relies on annotation (serde) followed by re-parsing of the code.
+- Serde relies on annotation followed by re-parsing of the code.
 
+<img src="image/rust_reflection.png">
 
 ---
 
@@ -483,7 +335,7 @@ let player: Player = serde_json::from_str(&json_str)?;
 | language | runtime reflection | compile-time reflection |
 |:---------|:-------------------|:------------------------|
 | C++ 26   |      👎              |       ✅               |
-| Go   |          ✅           |       👎               |
+| Go       |          ✅           |       👎               |
 | Java   |       ✅              |     👎                |
 | C#   |          ✅           |       👎               |
 | Rust   |         👎           |       👎               |
@@ -497,8 +349,7 @@ std::string json_str = simdjson::to_json(player);
 Player player = simdjson::from<Player>(json_str);
 ```
 
-- **AT COMPILE TIME**
-- with no extra tooling
+- no extra tooling required
 - no annotation
 
 ---
@@ -545,48 +396,19 @@ Player deserialize_Player(const json& j) {
 # The Actual Reflection Magic
 
 ```cpp
-template <typename T>
-  requires(std::is_class_v<T>)  // For user-defined types
-error_code deserialize(auto& json_value, T& out) {
-    simdjson::ondemand::object obj;
-    auto er = json_value.get_object().get(obj);
-    if(er) { return er; }
-    // capture the attributes:
-    constexpr auto members = std::define_static_array(std::meta::nonstatic_data_members_of(^^T,
-       std::meta::access_context::unchecked()));
+// Simplified snippet, members stores information about the class
+// obtained via std::define_static_array(std::meta::nonstatic_data_members_of(^^T, ...))...
+template for (constexpr auto member : members) {
+    // These are compile-time constants
+    constexpr std::string_view field_name = std::meta::identifier_of(member);
+    constexpr auto member_type = std::meta::type_of(member);
 
-    // This for loop happens at COMPILE TIME
-    template for (constexpr auto member : members) {
-        // These are compile-time constants
-        constexpr std::string_view field_name = std::meta::identifier_of(member);
-        constexpr auto member_type = std::meta::type_of(member);
-
-        // This generates code for each member
-        auto err = obj[field_name].get(out.[:member:]);
-        if (err && err != simdjson::NO_SUCH_FIELD) {
-            return err;
-        }
-    };
-
-    return simdjson::SUCCESS;
+    // This generates code for each member
+    obj[field_name].get(out.[:member:]);
 }
 ```
 
----
-
-
-# The template for Statement
-
-The `template for` statement is the key:
-
-- It's like a **compile-time for-loop**
-- E.g., it generates code for each struct member
-- By the time your program runs, all reflection has been *expanded* into normal C++ code
-
-This means:
-- **Zero runtime overhead**
-- **Full optimization opportunities**
-- **Type safety at compile time**
+See full implementation on [GitHub](https://github.com/simdjson/simdjson/blob/8aae14931d4f3cb0ef529ba5f7e2e34d7bcc8e19/include/simdjson/generic/ondemand/std_deserialize.h#L290)
 
 ---
 
@@ -609,36 +431,6 @@ std::string json = R"({"username":"Alice","level":42,"health":100.0})";
 Player p = simdjson::from<Player>(json);
 // Runtime values flow through compile-time generated code
 ```
-
----
-
-# Zero Overhead: Why It's Fast
-
-Since reflection happens at compile time, there's no runtime penalty:
-
-1. **No runtime type inspection** - everything is known at compile time
-2. **No string comparisons for field names** - they become compile-time constants
-3. **Optimal code generation** - the compiler sees the full picture
-4. **Inline everything** - generated code can be fully optimized
-
-The generated code is often **faster than hand-written code** because:
-- It's consistently optimized
-- No human errors or inefficiencies
-- Leverages simdjson's SIMD parsing throughout
-
----
-
-# Performance: The Best Part
-
-You might think "automatic = slow", but with simdjson + reflection:
-
-- **Compile-time code generation**: No runtime overhead from reflection
-- **SIMD-accelerated parsing**: simdjson uses CPU vector instructions
-- **Zero allocation**: String views and in-place parsing
-- **Throughput**: ~2-4 GB/s on modern hardware
-
-The generated code is often *faster* than hand-written code!
-
 
 ---
 
@@ -1395,7 +1187,7 @@ Try both: https://godbolt.org/z/1n539e7cq
 
 ## Compile-Time Field Discovery
 ```cpp
-template for (constexpr auto member : 
+template for (constexpr auto member :
               std::meta::nonstatic_data_members_of(^^Car)) {
     // Field names known at compile time!
     // Compiler generates optimal code for each field
@@ -1404,7 +1196,7 @@ template for (constexpr auto member :
 
 ## Result: Pre-computed Constants
 - Field names → 64-bit integers
-- String lengths → compile-time constants  
+- String lengths → compile-time constants
 - Escape sequences → eliminated entirely
 - Buffer sizes → calculated at compile time
 
