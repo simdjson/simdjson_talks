@@ -434,20 +434,6 @@ Player p = simdjson::from<Player>(json);
 
 ---
 
-# Real-World Benefits
-
-## Before Reflection (Our Game Server example)
-- 1000+ lines of serialization code
-- Prone to bugs due to serialization mismatching
-- Adding new features can imply making tedious changes to boilerplate serialization code
-
-## After Reflection
-- **0 lines** of serialization code
-- **0 serialization bugs** (if it compiles, it works!)
-- New features can be added much faster
-
----
-
 # The Bigger Picture
 
 This pattern extends beyond games:
