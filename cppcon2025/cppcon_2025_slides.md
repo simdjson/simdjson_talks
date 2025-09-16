@@ -253,7 +253,7 @@ This manual approach has several problems:
 <style scoped>
 section {
   text-align: center;
-  font-size: 2em;
+  font-size: 10em;
 }
 </style>
 
