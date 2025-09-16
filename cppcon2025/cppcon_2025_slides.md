@@ -391,7 +391,7 @@ Player deserialize_Player(const json& j) {
 ```cpp
 // Simplified snippet, members stores information about the class
 // obtained via std::define_static_array(std::meta::nonstatic_data_members_of(^^T, ...))...
-simdjson::ondemand::object obj;
+ondemand::object obj;
 
 template for (constexpr auto member : members) {
     // These are compile-time constants
@@ -449,7 +449,7 @@ std::string json = simdjson::to_json(Meeting{
     .is_recurring = true
 });
 
-Meeting m = simdjson::from<Meeting>(json);
+Meeting m = simdjson::from(json);
 ```
 
 ---
