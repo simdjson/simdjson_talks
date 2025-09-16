@@ -534,7 +534,7 @@ The magic:
 
 ---
 
-# How fast are we? ...
+# How fast are we?
 
 <img src="images/perf_with_simdjson.png" width="80%"/>
 
@@ -542,13 +542,13 @@ The magic:
 
 ---
 
-# Ablation Study: How We Achieved 3.2 GB/s
+# Ablation Study: How We Achieved 3.4 GB/s
 
 **What is Ablation?**
 From neuroscience: systematically remove parts to understand function
 
-**Our Approach (Apple Silicon M2):**
-1. **Baseline**: All optimizations enabled (3,211 MB/s)
+**Our Approach (Apple Silicon M3 MAX):**
+1. **Baseline**: All optimizations enabled (3,400 MB/s)
 2. **Disable one optimization** at a time
 3. **Measure performance impact**
 4. **Calculate contribution**: `(Baseline - Disabled) / Disabled`
@@ -698,25 +698,6 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
 
 ---
 
-# Real-World Impact
-
-**API Server Example:**
-- 10 million API responses/day
-- Average response: ~5KB JSON
-- Total: 50GB JSON serialization/day
-
-**Serialization Time:**
-```
-nlohmann::json:    210 seconds (3.5 minutes)
-RapidJSON:         102 seconds (1.7 minutes)
-Serde (Rust):       38 seconds
-yyjson:             24 seconds
-simdjson:           14.5 seconds ⭐
-```
-
-**Time saved: 195 seconds vs nlohmann (93% reduction)**
-
----
 
 # Key Technical Insights
 
