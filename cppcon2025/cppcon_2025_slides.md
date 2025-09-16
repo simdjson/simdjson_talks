@@ -434,34 +434,6 @@ Player p = simdjson::from<Player>(json);
 
 ---
 
-# Real-World Benefits
-
-## Before Reflection (Our Game Server example)
-- 1000+ lines of serialization code
-- Prone to bugs due to serialization mismatching
-- Adding new features can imply making tedious changes to boilerplate serialization code
-
-## After Reflection
-- **0 lines** of serialization code
-- **0 serialization bugs** (if it compiles, it works!)
-- New features can be added much faster
-
----
-
-# The Bigger Picture
-
-This pattern extends beyond games:
-
-- **REST APIs**: Automatic request/response serialization
-- **Configuration Files**: Type-safe config loading
-- **Message Queues**: Serialize/deserialize messages
-- **Databases**: Object-relational mapping
-- **RPC Systems**: Automatic protocol generation
-
-With C++26 reflection, C++ finally catches up to languages like Rust (serde), Go (encoding/json), and C# (System.Text.Json) in terms of ease of use, but with **better performance** thanks to simdjson's SIMD optimizations.
-
----
-
 # Try It Yourself
 
 ```cpp
@@ -487,32 +459,6 @@ Meeting m = simdjson::from<Meeting>(json);
 
 ---
 
-# Round-Trip Any Data Structure
-
-```cpp
-struct TodoItem {
-    std::string task;
-    bool completed;
-    std::optional<std::string> due_date;
-};
-
-struct TodoList {
-    std::string owner;
-    std::vector<TodoItem> items;
-    std::map<std::string, int> tags;  // tag -> count
-};
-
-// Serialize complex nested structures
-TodoList my_todos = { /* ... */ };
-std::string json = simdjson::to_json(my_todos);
-
-// Deserialize back - perfect round-trip
-TodoList restored = simdjson::from<TodoList>(json);
-assert(my_todos == restored);  // Works if you define operator==
-```
-
----
-
 # The Entire API Surface
 
 Just two functions. Infinite possibilities.
@@ -524,8 +470,7 @@ simdjson::from<T>(json)    // → T object
 
 That's it.
 
-No macros. No code generation. No external tools.
-
+No macros. No class/struct instrusion. No external tools.
 Just simdjson leveraging C++26 reflection.
 
 ---
@@ -638,21 +583,6 @@ __m512i word = _mm512_loadu_si512(data); // load 64 bytes
 // check for control characters:
 _mm512_cmple_epu8_mask(word, _mm512_set1_epi8(31));
 ```
-
----
-
-# Runtime dispatching is poor with quick functions
-
-- Calling a fast function like `fast_needs_escaping` without inlining prevents useful optimizations.
-- Runtime dispatching implies a function call!
-
----
-
-# Current solution
-
-- No runtime dispatching (*sad face*).
-- All x64 processors support Pentium 4-level SIMD. Use that in a short function.
-- *Easy* if programmer builds for specific machine (`-march=native`), use fancier tricks.
 
 ---
 
@@ -864,18 +794,6 @@ simdjson:           14.5 seconds ⭐
 4. **Every Optimization Matters**
    - Small gains compound into huge improvements
 
----
-
-# Conclusion
-
-## C++26 Reflection + simdjson =
-
-- ✅ **Zero boilerplate**
-- ✅ **Compile-time safety**
-- ✅ **Blazing fast performance**
-- ✅ **Clean, modern API**
-
-Welcome to the future of C++ serialization! 🚀
 
 ---
 
