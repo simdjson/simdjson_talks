@@ -45,9 +45,14 @@ CppCon 2025
 
 # JSON downside?
 
-Reading and writing JSON can be *slow*. E.g., 20 MB/s to 200 MB/s.
+Reading and writing JSON can be *slow*. E.g., 100 MB/s to 300 MB/s.
 
 - Slower than fast disks or fast networks
+
+```bash
+$ go run parse_twitter.go
+Parsed 0.63 GB in 6.961 seconds (90.72 MB/s)
+```
 
 
 ---
