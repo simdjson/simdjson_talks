@@ -285,17 +285,18 @@ void save_player(const Player& p) {
 ```cpp
 // Deserialization - one line!
 Player load_player(const std::string& json_str) {
-    return simdjson::from<Player>(json_str);  // That's it!
+    return simdjson::from(json_str);  // That's it!
 }
 ```
 
 ---
 
-# Benefits
+# Benefits of our implementation
 
 - **No manual field mapping**
 - **No maintenance burden**
-- **Handles nested structures automatically**
+- **Handles nested and user-defined structures and containers automatically**
+- **You can still customize things if you want**
 - **Performance tuned by the library**
 
 ---
@@ -351,7 +352,7 @@ let player: Player = serde_json::from_str(&json_str)?;
 
 ```cpp
 std::string json_str = simdjson::to_json(player);
-Player player = simdjson::from<Player>(json_str);
+Player player = simdjson::from(json_str);
 ```
 
 - no extra tooling required
