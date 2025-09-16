@@ -12,10 +12,13 @@ ax = plt.gca()
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
-for bar in bars:
+lang_labels = ["C++", "C++", "Rust", "C"]
+for i, bar in enumerate(bars):
     yval = bar.get_height()
     plt.text(bar.get_x() + bar.get_width()/2, yval + 50, f'{int(yval)} MB/s',
              ha='center', va='bottom', fontsize=12)
+    plt.text(bar.get_x() + bar.get_width()/2, yval + 150, lang_labels[i],
+             ha='center', va='bottom', fontsize=12, color='black', fontweight='bold', style='italic')
 
 plt.ylabel('Throughput (MB/s)', fontsize=14)
 plt.ylim(0, 2500)
@@ -38,11 +41,14 @@ ax = plt.gca()
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
+lang_labels = ["C++", "C++", "Rust", "C", "C++"]
 for i, bar in enumerate(bars):
     yval = bar.get_height()
     label = f'{yval} MB/s ⭐' if libraries_with[i] == 'simdjson' else f'{yval} MB/s'
     plt.text(bar.get_x() + bar.get_width()/2, yval + 50, label,
              ha='center', va='bottom', fontsize=12)
+    plt.text(bar.get_x() + bar.get_width()/2, yval + 150, lang_labels[i],
+             ha='center', va='bottom', fontsize=12, color='black', fontweight='bold', style='italic')
 
 # Highlight simdjson
 bars[-1].set_linewidth(3)
@@ -69,11 +75,14 @@ ax = plt.gca()
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
+lang_labels = ["C++", "C", "Rust", "C++", "C++"]
 for i, bar in enumerate(bars):
     yval = bar.get_height()
     label = f'{yval} MB/s ⭐' if libraries_sorted[i] == 'simdjson' else f'{yval} MB/s'
     plt.text(bar.get_x() + bar.get_width()/2, yval + 50, label,
              ha='center', va='bottom', fontsize=12)
+    plt.text(bar.get_x() + bar.get_width()/2, yval + 150, lang_labels[i],
+             ha='center', va='bottom', fontsize=12, color='black', fontweight='bold', style='italic')
 
 # Highlight simdjson
 bars[0].set_linewidth(3)
