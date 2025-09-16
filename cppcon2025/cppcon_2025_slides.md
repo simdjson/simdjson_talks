@@ -434,7 +434,7 @@ Player p = simdjson::from(json);
 ```cpp
 struct Meeting {
     std::string title;
-    std::chrono::system_clock::time_point start_time;
+    long long start_time;
     std::vector<std::string> attendees;
     std::optional<std::string> location;
     bool is_recurring;
@@ -443,7 +443,9 @@ struct Meeting {
 // Automatically serializable/deserializable!
 std::string json = simdjson::to_json(Meeting{
     .title = "CppCon Planning",
-    .start_time = std::chrono::system_clock::now(),
+    .start_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now().time_since_epoch()
+    ).count(),
     .attendees = {"Alice", "Bob", "Charlie"},
     .location = "Denver",
     .is_recurring = true
@@ -452,21 +454,7 @@ std::string json = simdjson::to_json(Meeting{
 Meeting m = simdjson::from(json);
 ```
 
----
-
-# The Entire API Surface
-
-Just two functions. Infinite possibilities.
-
-```cpp
-simdjson::to_json(object)  // → JSON string
-simdjson::from(json)    // → T object
-```
-
-That's it.
-
-No macros. No class/struct instrusion. No external tools.
-Just simdjson leveraging C++26 reflection.
+Try out this example [here](https://godbolt.org/z/WWGjhnjWW)
 
 ---
 
@@ -484,9 +472,8 @@ How do we automatically serialize ALL these different containers?
 
 ---
 
-# The Naive Approach: Without Concepts
+# The Naive Approach
 
-Without concepts, you'd need a separate function for EACH container type:
 
 ```cpp
 // The OLD way - repetitive and error-prone! 😱
@@ -542,46 +529,6 @@ The magic:
 
 ---
 
-# Does your string need escaping?
-
-- In JSON, you must escape control characters, quotes.
-- Most strings in practice do not need escaping.
-
-
-```Cpp
-bool simple_needs_escaping(std::string_view v) {
-  for (unsigned char c : v) {
-    if(json_quotable_character[c]) { return true; }
-  }
-  return false;
-}
-```
-
-
----
-
-# SIMD (Pentium 4 and better)
-
-```cpp
-__m128i word = _mm_loadu_si128(data); // load 16 bytes
-// check for control characters:
-_mm_cmpeq_epi8(_mm_subs_epu8(word, _mm_set1_epi8(31)),
-                                _mm_setzero_si128());
-```
-
----
-
-# SIMD (AVX-512)
-
-```cpp
-__m512i word = _mm512_loadu_si512(data); // load 64 bytes
-// check for control characters:
-_mm512_cmple_epu8_mask(word, _mm512_set1_epi8(31));
-```
-
----
-
-# Current JSON Serialization Landscape
 
 <img src="images/perf_landscape.png" width="85%"/>
 
