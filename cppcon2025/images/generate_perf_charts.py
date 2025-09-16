@@ -20,8 +20,8 @@ for bar in bars:
 plt.ylabel('Throughput (MB/s)', fontsize=14)
 plt.ylim(0, 2500)
 plt.title('Current JSON Serialization Landscape', fontsize=16)
-plt.text(0.99, 0.01, 'Apple Silicon (M3 MAX)', transform=ax.transAxes,
-         fontsize=10, ha='right', va='bottom', style='italic', color='gray')
+plt.text(0.01, 0.99, 'Apple Silicon (M3 MAX)', transform=ax.transAxes,
+         fontsize=14, ha='left', va='top', style='italic', color='black')
 plt.tight_layout()
 plt.savefig('perf_landscape.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -51,8 +51,8 @@ bars[-1].set_edgecolor('#FF0000')
 plt.ylabel('Throughput (MB/s)', fontsize=14)
 plt.ylim(0, 4000)
 plt.title('JSON Serialization Performance', fontsize=16)
-plt.text(0.99, 0.01, 'Apple Silicon (M3 MAX)', transform=ax.transAxes,
-         fontsize=10, ha='right', va='bottom', style='italic', color='gray')
+plt.text(0.01, 0.99, 'Apple Silicon (M3 MAX)', transform=ax.transAxes,
+         fontsize=14, ha='left', va='top', style='italic', color='black')
 plt.tight_layout()
 plt.savefig('perf_with_simdjson.png', dpi=300, bbox_inches='tight')
 plt.close()
@@ -82,8 +82,8 @@ bars[0].set_edgecolor('#FF0000')
 plt.ylabel('Throughput (MB/s)', fontsize=14)
 plt.ylim(0, 4000)
 plt.title('Twitter Dataset (631KB) - Serialization Performance', fontsize=16)
-plt.text(0.99, 0.01, 'Apple Silicon (M3 MAX)', transform=ax.transAxes,
-         fontsize=10, ha='right', va='bottom', style='italic', color='gray')
+plt.text(0.01, 0.99, 'Apple Silicon (M3 MAX)', transform=ax.transAxes,
+         fontsize=14, ha='left', va='top', style='italic', color='black')
 plt.tight_layout()
 plt.savefig('perf_comparison.png', dpi=300, bbox_inches='tight')
 plt.close()
