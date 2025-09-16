@@ -471,7 +471,7 @@ Just two functions. Infinite possibilities.
 
 ```cpp
 simdjson::to_json(object)  // → JSON string
-simdjson::from<T>(json)    // → T object
+simdjson::from(json)    // → T object
 ```
 
 That's it.
