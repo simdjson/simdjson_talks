@@ -243,13 +243,77 @@ This manual approach has several problems:
 
 ---
 
-# Goal: Seamless Serialization/Deserialization
+# Our goal: Seamless Serialization/Deserialization
 
 <img src="images/tofrom.svg" width="100%">
 
 ---
 
-# The Solution: C++26 Static Reflection
+<!-- _class: centered -->
+<style scoped>
+section {
+  text-align: center;
+  font-size: 2em;
+}
+</style>
+
+<p style="text-align:center">How do other languages do it?</p>
+
+---
+
+# C#
+
+```C#
+string jsonString = JsonSerializer.Serialize(player, options);
+Player deserializedPlayer = JsonSerializer.Deserialize<Player>(jsonInput, options);
+```
+
+<img src="images/csharp.png" width="10%"/>
+
+---
+
+# Why can C# implementation be so elegant?
+It is using **reflection** to access the attributes of a struct during runtime.
+
+---
+
+# Rust (serde)
+
+```rust
+// Rust with serde
+let json_str = serde_json::to_string(&player)?;
+let player: Player = serde_json::from_str(&json_str)?;
+```
+
+<img src="images/rust.png" width="10%" />
+
+---
+
+# Rust reflection
+
+- Rust does not have any built-in reflection capabilities.
+- Serde relies on annotation and macros.
+
+<img src="image/rust_reflection.png">
+
+---
+
+
+# Reflection as accessing the attributes of a struct.
+
+| language | runtime reflection | compile-time reflection |
+|:---------|:-------------------|:------------------------|
+| C++ 26   |      👎              |       ✅               |
+| Go       |          ✅           |       👎               |
+| Java   |       ✅              |     👎                |
+| C#   |          ✅           |       👎               |
+| Rust   |         👎           |       👎               |
+
+---
+
+# Now it's our turn to have reflection!
+
+<!-- TODO: maybe add a reference to one of Herb's talks -->
 
 With C++26 reflection and simdjson, **all that boilerplate disappears**:
 
@@ -296,88 +360,9 @@ Runnable example at https://godbolt.org/z/Efr7bK9jn
 # Benefits of our implementation
 
 - **No manual field mapping**
-- **No maintenance burden**
+- **Minimal maintenance burden**
 - **Handles nested and user-defined structures and containers automatically**
-- **You can still customize things if you want**
-- **Performance tuned by the library**
-
----
-
-# C#
-
-```C#
-string jsonString = JsonSerializer.Serialize(player, options);
-Player deserializedPlayer = JsonSerializer.Deserialize<Player>(jsonInput, options);
-```
-
-<img src="images/csharp.png" width="10%"/>
-
----
-
-# Rust (serde)
-
-```rust
-// Rust with serde
-let json_str = serde_json::to_string(&player)?;
-let player: Player = serde_json::from_str(&json_str)?;
-```
-
-
-<img src="images/rust.png" width="10%" />
-
----
-
-# Rust reflection
-
-
-- Rust does not have ANY reflection.
-- You cannot enumerate the methods of a struct. Either at runtime or at compile-time.
-- Serde relies on annotation followed by re-parsing of the code.
-
-<img src="image/rust_reflection.png">
-
----
-
-# Reflection as accessing the attributes of a struct.
-
-| language | runtime reflection | compile-time reflection |
-|:---------|:-------------------|:------------------------|
-| C++ 26   |      👎              |       ✅               |
-| Go       |          ✅           |       👎               |
-| Java   |       ✅              |     👎                |
-| C#   |          ✅           |       👎               |
-| Rust   |         👎           |       👎               |
-
----
-
-# With C++26: simple, maintainable, performant code
-
-```cpp
-std::string json_str = simdjson::to_json(player);
-Player player = simdjson::from(json_str);
-```
-
-- no extra tooling required
-- no annotation
-
----
-
-
-# How Does It Work?
-
-## The Key Insight: Compile-Time Code Generation
-
-**"How can compile-time reflection handle runtime JSON data?"**
-
-The answer: Reflection operates on **types and structure**, not runtime values.
-
-It generates regular C++ code at compile time that handles your runtime data.
-
-
-
-
-
-
+- **You can still customize things if and when you want to**
 
 ---
 
@@ -385,7 +370,7 @@ It generates regular C++ code at compile time that handles your runtime data.
 
 ```cpp
 // What you write:
-Player p = simdjson::from<Player>(runtime_json_string);
+Player p = simdjson::from(runtime_json_string);
 
 // What reflection generates at COMPILE TIME (conceptually):
 Player deserialize_Player(const json& j) {
@@ -406,6 +391,8 @@ Player deserialize_Player(const json& j) {
 ```cpp
 // Simplified snippet, members stores information about the class
 // obtained via std::define_static_array(std::meta::nonstatic_data_members_of(^^T, ...))...
+simdjson::ondemand::object obj;
+
 template for (constexpr auto member : members) {
     // These are compile-time constants
     constexpr std::string_view field_name = std::meta::identifier_of(member);
@@ -436,7 +423,7 @@ struct Player {
 
 // RUNTIME: The generated code processes actual JSON data
 std::string json = R"({"username":"Alice","level":42,"health":100.0})";
-Player p = simdjson::from<Player>(json);
+Player p = simdjson::from(json);
 // Runtime values flow through compile-time generated code
 ```
 

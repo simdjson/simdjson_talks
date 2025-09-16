@@ -185,17 +185,19 @@ std::string serialize_manual(const Car& car) {
     // Generates 1,635 lines of assembly!
 }
 
-// Reflection: 38 assembly instructions for user
+// Reflection: 648 total assembly instructions
 std::string serialize_reflection(const Car& car) {
-    return simdjson::to_json(car);  // 1 line!
-    // User sees: 38 lines of wrapper assembly
-    // Compiler generates: 648 lines of optimized template code
+    return simdjson::to_json(car);  // 1 line of C++!
+    // Compiler generates: 648 lines of optimized assembly
+    // (38 wrapper + 610 template instantiation)
 }
 ```
 
-**43x code reduction for the developer!**
-**2.5x fewer instructions overall!**
-**15x fewer branches to predict!**
+**What actually matters:**
+- **2.5x fewer instructions** (1,635 → 648)
+- **15x fewer branches** (311 → ~20)
+- **70+ lines of C++ → 1 line**
+- **Zero manual string escaping**
 
 ---
 
