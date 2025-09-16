@@ -284,10 +284,12 @@ void save_player(const Player& p) {
 
 ```cpp
 // Deserialization - one line!
-Player load_player(const std::string& json_str) {
-    return simdjson::from<Player>(json_str);  // That's it!
+Player load_player(std::string& json_str) {
+    return simdjson::from(json_str);  // That's it!
 }
 ```
+
+Runnable example at https://godbolt.org/z/Efr7bK9jn
 
 ---
 
