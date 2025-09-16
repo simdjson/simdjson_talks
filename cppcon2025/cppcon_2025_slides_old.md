@@ -7,6 +7,18 @@ paginate: true
 _paginate: false
 ---
 
+<!-- _class: centered -->
+<style scoped>
+section {
+  text-align: center;
+  font-size: 15em;
+}
+</style>
+
+I love you
+
+---
+
 # C++26 Reflection for JSON Serialization
 ## A Practical Journey
 
