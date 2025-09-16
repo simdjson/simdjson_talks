@@ -459,32 +459,6 @@ Meeting m = simdjson::from<Meeting>(json);
 
 ---
 
-# Round-Trip Any Data Structure
-
-```cpp
-struct TodoItem {
-    std::string task;
-    bool completed;
-    std::optional<std::string> due_date;
-};
-
-struct TodoList {
-    std::string owner;
-    std::vector<TodoItem> items;
-    std::map<std::string, int> tags;  // tag -> count
-};
-
-// Serialize complex nested structures
-TodoList my_todos = { /* ... */ };
-std::string json = simdjson::to_json(my_todos);
-
-// Deserialize back - perfect round-trip
-TodoList restored = simdjson::from<TodoList>(json);
-assert(my_todos == restored);  // Works if you define operator==
-```
-
----
-
 # The Entire API Surface
 
 Just two functions. Infinite possibilities.
@@ -496,8 +470,7 @@ simdjson::from<T>(json)    // → T object
 
 That's it.
 
-No macros. No code generation. No external tools.
-
+No macros. No class/struct instrusion. No external tools.
 Just simdjson leveraging C++26 reflection.
 
 ---
