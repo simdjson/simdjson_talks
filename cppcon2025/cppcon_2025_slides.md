@@ -294,7 +294,7 @@ let player: Player = serde_json::from_str(&json_str)?;
 - Rust does not have any built-in reflection capabilities.
 - Serde relies on annotation and macros.
 
-<img src="image/rust_reflection.png">
+<img src="images/rust_reflection.jpg" width="50%">
 
 ---
 
@@ -429,7 +429,7 @@ Player p = simdjson::from(json);
 
 ---
 
-# Try It Yourself
+Try out this example at https://godbolt.org/z/WWGjhnjWW
 
 ```cpp
 struct Meeting {
@@ -454,7 +454,6 @@ std::string json = simdjson::to_json(Meeting{
 Meeting m = simdjson::from(json);
 ```
 
-Try out this example [here](https://godbolt.org/z/WWGjhnjWW)
 
 ---
 
@@ -583,21 +582,6 @@ constexpr auto username_key = "\"username\":";  // Pre-computed!
 b.append_literal(username_key);  // Just memcpy!
 ```
 
----
-
-# Consteval Performance Impact (Apple Silicon)
-
-| Dataset | Baseline | No Consteval | Impact | **Speedup** |
-|---------|----------|--------------|--------|-------------|
-| Twitter | 3,211 MB/s | 1,607 MB/s | -50% | **2.00x** |
-| CITM | 2,360 MB/s | 978 MB/s | -59% | **2.41x** |
-
-**Twitter Example (100 tweets):**
-- 100 tweets × 15 fields = **1,500 field names**
-- Without: 1,500 runtime escape operations
-- With: **0 runtime operations**
-
-**Result: 2-2.6x faster serialization!**
 
 ---
 
@@ -620,19 +604,6 @@ __m128i needs_escape = check_all_conditions_parallel(chunk);
 if (!needs_escape)
     return false;  // Fast path!
 ```
-
----
-
-# SIMD Escaping Performance Impact (Apple Silicon)
-
-| Dataset | Baseline | No SIMD | Impact | **Speedup** |
-|---------|----------|---------|--------|-------------|
-| Twitter | 3,211 MB/s | 2,269 MB/s | -29% | **1.42x** |
-| CITM | 2,360 MB/s | 2,259 MB/s | -4% | **1.04x** |
-
-**Why Different Impact?**
-- **Twitter**: Long text fields (tweets, descriptions) → Big win
-- **CITM**: Mostly numbers → Small impact
 
 ---
 
@@ -667,16 +638,6 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
 // CPU optimizes for this path
 ```
 
-**Buffer Growth:**
-- Linear: 1000 allocations for 1MB
-- Exponential: 10 allocations for 1MB
-
-| Both Optimizations | Impact | Speedup |
-|-------------------|--------|---------|
-| Twitter & CITM | ~1% | 1.01x |
-
-**Small but free!**
-
 ---
 
 # Combined Performance Impact
@@ -692,6 +653,9 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
 | **Buffer Growth** | -0.4% | +2% |
 | **TOTAL** | **~2.9x faster** | **~3.4x faster** |
 
+
+---
+
 **From Baseline to Optimized:**
 - Twitter: ~1,100 MB/s → 3,211 MB/s
 - CITM: ~700 MB/s → 2,360 MB/s
@@ -706,13 +670,13 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
    - C++26 reflection enables unprecedented optimization
 
 2. **SIMD Everywhere**
-   - Not just for parsing anymore
    - String operations benefit hugely
 
 3. **Avoid Hidden Costs**
    - Hidden allocations: `std::to_string()`
-   - Hidden divisions: `log10(value)`
-   - Hidden mispredictions: rare conditions
+ 
+<!-- - Hidden divisions: `log10(value)`
+   - Hidden mispredictions: rare conditions -->
 
 4. **Every Optimization Matters**
    - Small gains compound into huge improvements
@@ -721,8 +685,6 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
 ---
 
 # Thank You!
-
-## Special Recognition
 
 **C++ Reflection Paper Authors**
 - The authors of P2996 for making compile-time reflection a reality
@@ -733,12 +695,9 @@ if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
 
 **Compiler Explorer Team**
 - Matt Godbolt and contributors
-- Essential for validating our reflection approach
-- Enabling rapid prototyping before integration
 
 **simdjson Community**
 - All contributors and users
-- Your feedback drives our innovation
 
 ---
 
