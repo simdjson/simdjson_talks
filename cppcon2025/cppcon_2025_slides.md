@@ -87,7 +87,7 @@ Source: Gwen (Chen) Shapira
 
 - Allows us to process 16 (or more) bytes or more with one instruction
 - Supported on all modern CPUs (phone, laptop)
-- <Add a bullet point for language support voted on C++26>
+- Data-parallel types (SIMD) (recently added to C++26)
 
 ---
 
