@@ -547,18 +547,18 @@ The magic:
 From neuroscience: systematically remove parts to understand function
 
 **Our Approach (Apple Silicon M3 MAX):**
-1. **Baseline**: All optimizations enabled (3,400 MB/s)
-2. **Disable one optimization** at a time
-3. **Measure performance impact**
-4. **Calculate contribution**: `(Baseline - Disabled) / Disabled`
+1) **Baseline**: All optimizations enabled (3,400 MB/s)
+2) **Disable one optimization** at a time
+3) **Measure performance impact**
+4) **Calculate contribution**: `(Baseline - Disabled) / Disabled`
 
 ---
 
 # Five Key Optimizations
 
-1. **Consteval**: Compile-time field name processing
-2. **SIMD String Escaping**: Vectorized character checks
-3. **Fast Integer Serialization**: Optimized number handling
+1) **Consteval**: Compile-time field name processing
+2) **SIMD String Escaping**: Vectorized character checks
+3) **Fast Integer Serialization**: Optimized number handling
 
 
 ---
@@ -693,18 +693,18 @@ We've observed a 6% slow-down when compiling simdjson with static reflection ena
 
 # Key Technical Insights
 
-1. **With reflection and concepts**
+1) **With reflection and concepts**
    - your code becomes shorter
    - your code becomes more general
 
-2. Compilation time not much slower.
+2) **Compilation time not much slower**
 
-3. **Compile-Time optimizations can be awesome**
+3) **Compile-Time optimizations can be awesome**
    - Consteval: 2-2.6x speedup alone
 
-4. **SIMD** String operations benefit
+4) **SIMD** String operations benefit
 
-5. **Every Optimization Matters**
+5) **Every Optimization Matters**
    - Small gains compound into huge improvements
 
 
