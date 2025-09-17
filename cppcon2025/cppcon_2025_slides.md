@@ -559,8 +559,19 @@ From neuroscience: systematically remove parts to understand function
 1. **Consteval**: Compile-time field name processing
 2. **SIMD String Escaping**: Vectorized character checks
 3. **Fast Integer Serialization**: Optimized number handling
-4. **Branch Prediction Hints**: CPU pipeline optimization
-5. **Buffer Growth Strategy**: Smart memory allocation
+
+
+---
+
+# Combined Performance Impact
+
+
+| Optimization | Twitter Contribution | CITM Contribution |
+|--------------|---------------------|-------------------|
+| **Consteval** | +100% (2.00x) | +141% (2.41x) |
+| **SIMD Escaping** | +42% (1.42x) | +4% (1.04x) |
+| **Fast Digits** | +6% (1.06x) | +34% (1.34x) |
+
 
 ---
 
@@ -648,7 +659,7 @@ int fast_digit_count_64(uint64_t x) {
   static uint64_t table[] = {9,
                              99,
                              999,
-                             ...
+                             //...
                              9999999999999999ULL,
                              99999999999999999ULL,
                              999999999999999999ULL,
@@ -673,57 +684,28 @@ std::to_string(value).length();  // Allocates string just to count!
 
 ---
 
-# Optimizations #4 & #5: Branch Hints & Buffer Growth
+# What about compilation time?
 
-**Branch Prediction:**
-```cpp
-if (UNLIKELY(buffer_full)) {  // CPU knows this is rare
-    grow_buffer();
-}
-// CPU optimizes for this path
-```
-
----
-
-# Combined Performance Impact
-
-**All Optimizations Together:**
-
-| Optimization | Twitter Contribution | CITM Contribution |
-|--------------|---------------------|-------------------|
-| **Consteval** | +100% (2.00x) | +141% (2.41x) |
-| **SIMD Escaping** | +42% (1.42x) | +4% (1.04x) |
-| **Fast Digits** | +6% (1.06x) | +34% (1.34x) |
-| **Branch Hints** | +1% | +5% |
-| **Buffer Growth** | -0.4% | +2% |
-| **TOTAL** | **~2.9x faster** | **~3.4x faster** |
-
-
----
-
-**From Baseline to Optimized:**
-- Twitter: ~1,100 MB/s → 3,211 MB/s
-- CITM: ~700 MB/s → 2,360 MB/s
+....
 
 ---
 
 
 # Key Technical Insights
 
-1. **Compile-Time optimizations can be awesome**
+1. **With reflection and concepts**
+   - your code becomes shorter
+   - your code becomes more general
+
+2. Compilation time not much slower.
+
+3. **Compile-Time optimizations can be awesome**
    - Consteval: 2-2.6x speedup alone
    - C++26 reflection enables unprecedented optimization
 
-2. **SIMD Everywhere**
-   - String operations benefit hugely
+4. **SIMD** String operations benefit
 
-3. **Avoid Hidden Costs**
-   - Hidden allocations: `std::to_string()`
- 
-<!-- - Hidden divisions: `log10(value)`
-   - Hidden mispredictions: rare conditions -->
-
-4. **Every Optimization Matters**
+5. **Every Optimization Matters**
    - Small gains compound into huge improvements
 
 
