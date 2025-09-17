@@ -701,7 +701,6 @@ We've observed a 6% slow-down when compiling simdjson with static reflection ena
 
 3. **Compile-Time optimizations can be awesome**
    - Consteval: 2-2.6x speedup alone
-   - C++26 reflection enables unprecedented optimization
 
 4. **SIMD** String operations benefit
 
