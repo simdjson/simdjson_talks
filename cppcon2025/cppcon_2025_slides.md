@@ -610,8 +610,8 @@ for (char c : str) {
 
 **SIMD (16 bytes at once):**
 ```cpp
-__m128i chunk = load_16_bytes(str);
-__m128i needs_escape = check_all_conditions_parallel(chunk);
+auto chunk = load_16_bytes(str);
+auto needs_escape = check_all_conditions_parallel(chunk);
 if (!needs_escape)
     return false;  // Fast path!
 ```
