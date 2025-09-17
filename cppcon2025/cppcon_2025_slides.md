@@ -558,7 +558,7 @@ From neuroscience: systematically remove parts to understand function
 
 1. **Consteval**: Compile-time field name processing
 2. **SIMD String Escaping**: Vectorized character checks
-3. **Fast Digit Counting**: Optimized digit count
+3. **Fast Integer Serialization**: Optimized number handling
 4. **Branch Prediction Hints**: CPU pipeline optimization
 5. **Buffer Growth Strategy**: Smart memory allocation
 
@@ -607,24 +607,69 @@ if (!needs_escape)
 
 ---
 
-# Optimization #3: Fast Digit Counting
+# Optimization #3: Fast Integer serialization
 
-**Traditional:**
+
+```cpp
+while(number >= 10) {
+     *write_pointer-- = char('0' + (number % 10));
+     number /= 10;
+}
+*write_pointer = char('0' + number);
+```
+
+Writing from the end
+
+---
+
+# Two digits at a time
+
+```cpp
+while(number >= 100) {
+    memcpy(write_pointer - 1, &internal::decimal_table[(pv % 100)*2], 2);
+    write_pointer -= 2;
+    pv /= 100;
+}
+if(number >= 10) {
+     *write_pointer-- = char('0' + (number % 10));
+     number /= 10;
+}
+*write_pointer = char('0' + number);
+```
+
+---
+
+# Know where to start writing
+
+- Useful to compute quickly the number of digits
+
+```cpp
+int fast_digit_count_64(uint64_t x) {
+  static uint64_t table[] = {9,
+                             99,
+                             999,
+                             ...
+                             9999999999999999ULL,
+                             99999999999999999ULL,
+                             999999999999999999ULL,
+                             9999999999999999999ULL};
+  int y = (19 * int_log2(x) >> 6);
+  y += x > table[y];
+  return y + 1;
+}
+```
+
+
+---
+
+# Does fast integer processing matter?
+
+Replace fast digit count by naive approach
+
 ```cpp
 std::to_string(value).length();  // Allocates string just to count!
 ```
 
-**Optimized:**
-```cpp
-fast_digit_count(value);  // Bit operations + lookup table
-```
-
-| Dataset | Baseline | No Fast Digits | **Speedup** |
-|---------|----------|----------------|-------------|
-| Twitter | 3,211 MB/s | 3,035 MB/s | **1.06x** |
-| CITM | 2,360 MB/s | 1,767 MB/s | **1.34x** |
-
-**CITM has ~10,000+ integers!**
 
 ---
 
