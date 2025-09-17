@@ -686,7 +686,7 @@ std::to_string(value).length();  // Allocates string just to count!
 
 # What about compilation time?
 
-....
+We've observed a 6% slow-down when compiling simdjson with static reflection enabled. (clang p2996 experimental branch).
 
 ---
 
