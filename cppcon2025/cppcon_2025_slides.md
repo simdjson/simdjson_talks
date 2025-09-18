@@ -655,6 +655,7 @@ if (!needs_escape)
 * Only 34% worse in one dataset.
 
 ---
+![bg right](images/slowcompiler.png)
 
 # What about compilation time?
 
@@ -698,6 +699,9 @@ We've observed a 6% slow-down when compiling simdjson with static reflection ena
 - All contributors and users (John Keiser, Geoff Langdale, Paul Dreik...)
 
 ---
+
+![bg right](images/jsonstickers.jpg)
+
 
 # Questions?
 
