@@ -493,7 +493,20 @@ void serialize(string_builder& b, const std::set<T>& v) { /* ... */ }
 Concepts let us say: **"If it walks like a duck and quacks like a duck..."**
 
 ```cpp
-// The NEW way - one function handles ALL array-like containers!
+template <typename T>
+concept container_but_not_string =
+    requires(T a) {
+      { a.size() } -> std::convertible_to<std::size_t>;
+      {
+        a[std::declval<std::size_t>()]
+      }; // check if elements are accessible for the subscript operator
+    } && !std::is_same_v<T, std::string> &&
+    !std::is_same_v<T, std::string_view> && !std::is_same_v<T, const char *>;
+```
+
+---
+
+```cpp
 template<typename T>
   requires(has_size_and_subscript<T>)  // "If it has .size() and operator[]"
 void serialize(string_builder& b, const T& container) {
