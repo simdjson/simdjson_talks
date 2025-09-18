@@ -104,6 +104,9 @@ Source: Gwen (Chen) Shapira
 
 ---
 
+![bg right](images/avx.jpeg)
+
+
 # SIMD Support in simdjson
 
 * x64: SSSE3 (128-bit), AVX-2 (256-bit), AVX-512 (512-bit)
@@ -114,7 +117,10 @@ Source: Gwen (Chen) Shapira
 
 ---
 
+![bg right 90%](images/simdjsondesign.png)
+
 # simdjson: Design
+
 
 * First scan identifies the structural characters, start of all strings at about 10 GB/s using SIMD instructions.
 * Validates Unicode (UTF-8) at 30 GB/s.
@@ -208,6 +214,7 @@ for (auto item : arr) {
 
 ---
 
+
 # When Your Game Grows...
 
 ```cpp
@@ -229,9 +236,14 @@ struct Player {
 };
 ```
 
+
 ---
 
-<img src="images/happy_programmer.jpg">
+# Happy programmer...
+
+
+![bg right](images/happy_programmer.jpg)
+
 
 ---
 

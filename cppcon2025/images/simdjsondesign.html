@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styled JSON Display</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        pre {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-x: auto;
+            border: 1px solid #e0e0e0;
+        }
+        .json-key {
+            color: #2c3e50;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .json-string {
+            color: #e74c3c;
+        }
+        .json-number {
+            color: #2980b9;
+        }
+        .json-bracket {
+            color: #8e44ad;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .boxed {
+            border: 1px solid #333;
+            padding: 1px 3px;
+            border-radius: 3px;
+            display: inline-block;
+            line-height: 1;
+        }
+        
+        .string-start {
+            position: relative;
+        }
+        .number-start::before {
+            content: attr(data-first-digit);
+            border: 1px solid #333;
+            padding: 1px 3px;
+            border-radius: 3px;
+            display: inline-block;
+            line-height: 1;
+        }
+        .number-start {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <pre>
+    <span class="json-bracket boxed">{</span>
+        <span class="json-key"><span class="boxed json-string">"</span>nom"</span><span class="boxed">:</span> <span class="string-start json-string"><span class="boxed json-string">"</span>Marie Dubois"</span><span class="boxed">,</span>
+        <span class="json-key"><span class="boxed json-string">"</span>age"</span><span class="boxed">:</span> <span class="json-number number-start" data-first-digit="2">28</span><span class="boxed">,</span>
+        <span class="json-key"><span class="boxed json-string">"</span>ville"</span><span class="boxed">:</span> <span class="string-start json-string"><span class="boxed json-string">"</span>Paris"</span><span class="boxed">,</span>
+        <span class="json-key"><span class="boxed json-string">"</span>loisirs"</span><span class="boxed">:</span> <span class="json-bracket boxed">[</span><span class="string-start json-string"><span class="boxed json-string">"</span>lecture"</span><span class="boxed">,</span> <span class="string-start json-string"><span class="boxed json-string">"</span>voyage"</span><span class="boxed">,</span> <span class="string-start json-string"><span class="boxed json-string">"</span>yoga"</span><span class="json-bracket boxed">]</span><span class="boxed">,</span>
+        <span class="json-key"><span class="boxed json-string">"</span>contact"</span><span class="boxed">:</span> <span class="json-bracket boxed">{</span>
+            <span class="json-key"><span class="boxed json-string">"</span>email"</span><span class="boxed">:</span> <span class="string-start json-string"><span class="boxed json-string">"</span>marie.dubois@example.com"</span><span class="boxed">,</span>
+            <span class="json-key"><span class="boxed json-string">"</span>phone"</span><span class="boxed">:</span> <span class="string-start json-string"><span class="boxed json-string">"</span>+33123456789"</span>
+        <span class="json-bracket boxed">}</span>
+    <span class="json-bracket boxed">}</span>
+    </pre>
+    </body>
+</html>
