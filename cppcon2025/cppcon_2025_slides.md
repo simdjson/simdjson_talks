@@ -331,6 +331,8 @@ let player: Player = serde_json::from_str(&json_str)?;
 
 # Reflection as Accessing the Attributes of a Structure
 
+<div class="center-table">
+
 | language | runtime reflection | compile-time reflection |
 |:---------|:-------------------|:------------------------|
 | C++ 26   |       ❌            |       ✅                |
@@ -338,6 +340,8 @@ let player: Player = serde_json::from_str(&json_str)?;
 | Java     |       ✅            |       ❌                |
 | C#       |       ✅            |       ❌                |
 | Rust     |       ❌            |       ❌   (macros)     |
+
+</div>
 
 ---
 
@@ -583,19 +587,6 @@ concept appendable_containers =
 
 ---
 
-```cpp
-template <appendable_containers T, typename... Args>
-constexpr decltype(auto) emplace_one(T &vec, Args &&...args) {
-  if constexpr (details::supports_emplace_back<T>) {
-    return vec.emplace_back(std::forward<Args>(args)...);
-  } else if constexpr (details::supports_emplace<T>) {
-    return vec.emplace(std::forward<Args>(args)...);
-  } else if // ...
-}
-```
-
----
-
 # Concepts + Reflection = Automatic Support
 
 When you write:
@@ -662,13 +653,14 @@ From neuroscience: systematically remove parts to understand function
 
 # Combined Performance Impact
 
+<div class="center-table">
 
 | Optimization | Twitter Contribution | CITM Contribution |
 |--------------|---------------------|-------------------|
 | **Consteval** | +100% (2.00x) | +141% (2.41x) |
 | **SIMD Escaping** | +42% (1.42x) | +4% (1.04x) |
 | **Fast Digits** | +6% (1.06x) | +34% (1.34x) |
-
+</div>
 
 ---
 
