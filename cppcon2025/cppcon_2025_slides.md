@@ -21,6 +21,9 @@ CppCon 2025
 
 ---
 
+![bg right 95%](images/alice.png)
+
+
 # JSON
 
 * Portable, simple
@@ -33,16 +36,6 @@ CppCon 2025
   * arrays (list)
 
 
----
-
-```json
-{
-    "username": "Alice",
-    "level": 42,
-    "health": 99.5,
-    "inventory": ["sword", "shield", "potion"]
-}
-```
 
 ---
 
@@ -60,8 +53,15 @@ Parsed 0.63 GB in 6.961 seconds (90.72 MB/s)
 
 ---
 
+<style scoped>
+img[alt~="center"] {
+  display: block;
+  margin: 0 auto;
+}
+</style>
 
-<img src="images/gwen.jpeg" width="55%" />
+![w:700 center](images/gwen.jpeg)
+
 
 Source: Gwen (Chen) Shapira
 
@@ -78,7 +78,7 @@ Source: Gwen (Chen) Shapira
 * simdjson was the first library to break the gigabyte per second barrier
     * Parsing Gigabytes of JSON per Second, VLDB Journal 28 (6), 2019
     * On-Demand JSON: A Better Way to Parse Documents? SPE 54 (6), 2024
-* JSON for Modern C++ (nlohmann/json) can be $100\times$ slower!
+* JSON for Modern C++ (nlohmann/json) can be $10\times$ slower!
 
 <img src="images/simdjson.png" width="10%" />
 
@@ -96,11 +96,22 @@ Source: Gwen (Chen) Shapira
 
 # Not All Processors are Equal
 
+<style>
+.center-table {
+  display: flex;
+  justify-content: center;
+}
+</style>
+
+<div class="center-table">
+
 | processor       | year    | arithmetic logic units    | SIMD units     |
 |-----------------|---------|---------------------------|----------------|
 | Apple M*        |  2019   |    6+                     | $4 \times 128$ |
 | Intel Lion Cove |  2024   |    6                      | $4 \times 256$ |
 | AMD Zen 5       |  2024   |    6                      | $4 \times 512$ |
+
+</div>
 
 ---
 
@@ -123,7 +134,7 @@ Source: Gwen (Chen) Shapira
 
 
 * First scan identifies the structural characters, start of all strings at about 10 GB/s using SIMD instructions.
-* Validates Unicode (UTF-8) at 30 GB/s.
+* Validates Unicode at 30 GB/s.
 * Rest of parsing relies on the generated index.
 * Allows fast skipping. (Only parse what we need)
 * Can minify JSON at 10 to 20 GB/s
@@ -131,7 +142,7 @@ Source: Gwen (Chen) Shapira
 ---
 
 
-<img src="images/simdjson_benchmark.png" width="80%"/>
+<img src="images/simdjson_benchmark.png" width="85%"/>
 
 https://openbenchmarking.org/test/pts/simdjson
 
@@ -140,7 +151,7 @@ https://openbenchmarking.org/test/pts/simdjson
 
 # Usage
 
-You are probably using simdjson:
+**You are probably using simdjson:**
 
 - Node.js, Electron,...
 - ClickHouse
@@ -277,7 +288,10 @@ section {
 # C#
 
 ```C#
+
 string jsonString = JsonSerializer.Serialize(player, options);
+
+
 Player deserializedPlayer = JsonSerializer.Deserialize<Player>(jsonInput, options);
 ```
 
@@ -515,6 +529,20 @@ concept container_but_not_string =
       {
         a[std::declval<std::size_t>()]
       }; // check if elements are accessible for the subscript operator
+    };
+```
+
+---
+
+
+```cpp
+template <typename T>
+concept container_but_not_string =
+    requires(T a) {
+      { a.size() } -> std::convertible_to<std::size_t>;
+      {
+        a[std::declval<std::size_t>()]
+      }; // check if elements are accessible for the subscript operator
     } && !std::is_same_v<T, std::string> &&
     !std::is_same_v<T, std::string_view> && !std::is_same_v<T, const char *>;
 ```
@@ -522,18 +550,49 @@ concept container_but_not_string =
 ---
 
 ```cpp
-template<typename T>
-  requires(has_size_and_subscript<T>)  // "If it has .size() and operator[]"
-void serialize(string_builder& b, const T& container) {
-    b.append('[');
-    for (size_t i = 0; i < container.size(); ++i) {
-        serialize(b, container[i]);
-    }
-    b.append(']');
+template <class T>
+  requires(container_but_not_string<T>)
+constexpr void atom(string_builder &b, const T &t) {
+  if (t.size() == 0) {
+    b.append_raw("[]");
+    return;
+  }
+  b.append('[');
+  atom(b, t[0]);
+  for (size_t i = 1; i < t.size(); ++i) {
+    b.append(',');
+    atom(b, t[i]);
+  }
+  b.append(']');
 }
 ```
 
 ✅ Works with `vector`, `array`, `deque`, custom containers...
+
+
+---
+
+```cpp
+template <typename T>
+concept appendable_containers =
+    (details::supports_emplace_back<T> || details::supports_emplace<T> ||
+    details::supports_push_back<T> || details::supports_push<T> ||
+    details::supports_add<T> || details::supports_append<T> ||
+    details::supports_insert<T>);
+```
+
+---
+
+```cpp
+template <appendable_containers T, typename... Args>
+constexpr decltype(auto) emplace_one(T &vec, Args &&...args) {
+  if constexpr (details::supports_emplace_back<T>) {
+    return vec.emplace_back(std::forward<Args>(args)...);
+  } else if constexpr (details::supports_emplace<T>) {
+    return vec.emplace(std::forward<Args>(args)...);
+  } else if // ...
+}
+```
 
 ---
 
@@ -566,8 +625,9 @@ The magic:
 
 <img src="images/perf_with_simdjson.png" width="80%"/>
 
-**3.4 GB/s** - 14x faster than nlohmann, 2.5x faster than Serde!
+---
 
+**3.4 GB/s** - 14x faster than nlohmann, 2.5x faster than Serde!
 
 ---
 
