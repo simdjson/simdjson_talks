@@ -27,7 +27,7 @@ bench_yyjson                                                 :  1909.87 MB/s   0
 # Reading file /Users/random_person/Desktop/simdjson/buildreflect/jsonexamples/twitter.json
 # Note: Rust/Serde may include additional fields not in C++ structure.
 # output volume: 93311 bytes
-bench_rust                                                   :  417.89 MB/s   0.00 Ms/s
+bench_rust                                                   :  1710 MB/s 
 
 === Reflect-cpp ===
 # Reading file /Users/random_person/Desktop/simdjson/buildreflect/jsonexamples/twitter.json

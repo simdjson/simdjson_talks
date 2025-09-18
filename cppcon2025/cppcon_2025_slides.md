@@ -741,6 +741,7 @@ We've observed a 6% slow-down when compiling simdjson with static reflection ena
 
 4) **SIMD**: String operations benefit
 
+5) **Many optimization helps**
 
 ---
 
