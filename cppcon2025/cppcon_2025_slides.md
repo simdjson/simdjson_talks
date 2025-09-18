@@ -620,72 +620,9 @@ if (!needs_escape)
 
 # Optimization #3: Fast Integer serialization
 
-(`std::to_chars`)
-
-```cpp
-while(number >= 10) {
-     *write_pointer-- = char('0' + (number % 10));
-     number /= 10;
-}
-*write_pointer = char('0' + number);
-```
-
-Writing from the end
-
----
-
-# Two digits at a time
-
-```cpp
-while(number >= 100) {
-    memcpy(write_pointer - 1, &decimal_table[(pv % 100)*2], 2);
-    write_pointer -= 2;
-    pv /= 100;
-}
-if(number >= 10) {
-     *write_pointer-- = char('0' + (number % 10));
-     number /= 10;
-}
-*write_pointer = char('0' + number);
-```
-
----
-
-# Know where to start writing
-
-- Useful to compute quickly the number of digits
-
-```cpp
-template <typename number_type>
-int int_log2(number_type x) { 
-  return 63 - leading_zeroes(uint64_t(x) | 1); 
-}
-
-int fast_digit_count_64(uint64_t x) {
-  static uint64_t table[] = {9,
-                             99,
-                             999,
-                             //...
-                             9999999999999999ULL,
-                             99999999999999999ULL,
-                             999999999999999999ULL,
-                             9999999999999999999ULL};
-  int y = (19 * int_log2(x) >> 6);
-  y += x > table[y];
-  return y + 1;
-}
-```
-
----
-
-# Could use SIMD if we wanted to
-
-- Daniel Lemire, "Converting integers to decimal strings faster with AVX-512," in Daniel Lemire's blog, March 28, 2022, https://lemire.me/blog/2022/03/28/converting-integers-to-decimal-strings-faster-with-avx-512/.
-
----
-
-# Does fast integer processing matter?
-
+* Use the equivalent of `std::to_chars`
+* Could use SIMD if we wanted to
+  * Daniel Lemire, "Converting integers to decimal strings faster with AVX-512," in Daniel Lemire's blog, March 28, 2022, https://lemire.me/blog/2022/03/28/converting-integers-to-decimal-strings-faster-with-avx-512/.
 * Replace fast digit count by naive approach based on `std::to_string`
     ```cpp
     std::to_string(value).length();
