@@ -554,6 +554,8 @@ concept container_but_not_string =
 
 ---
 
+# Serialize 'array-like' Containers
+
 ```cpp
 template <class T>
   requires(container_but_not_string<T>)
@@ -575,7 +577,15 @@ constexpr void atom(string_builder &b, const T &t) {
 ✅ Works with `vector`, `array`, `deque`, custom containers...
 
 
+
 ---
+
+# For Deserialization
+
+* Many ways to add values to a container
+* `push_back`, `append`, `emplace_back`
+
+
 
 ```cpp
 template <typename T>
@@ -585,6 +595,42 @@ concept appendable_containers =
     details::supports_add<T> || details::supports_append<T> ||
     details::supports_insert<T>);
 ```
+
+---
+
+# Write a Helper Function
+
+```cpp
+template <appendable_containers T, typename... Args>
+constexpr decltype(auto) emplace_one(T &vec, Args &&...args) {
+  if constexpr (details::supports_emplace_back<T>) {
+    return vec.emplace_back(std::forward<Args>(args)...);
+  } else if constexpr (details::supports_emplace<T>) {
+    return vec.emplace(std::forward<Args>(args)...);
+  } else if constexpr (details::supports_push_back<T>) {
+    return vec.push_back(std::forward<Args>(args)...);
+  } else if constexpr (details::supports_push<T>) {
+    return vec.push(std::forward<Args>(args)...);
+  } else if constexpr (details::supports_add<T>) {
+    return vec.add(std::forward<Args>(args)...);
+  } else if constexpr (details::supports_append<T>) {
+    return vec.append(std::forward<Args>(args)...);
+  } else if constexpr (details::supports_insert<T>) {
+    return vec.insert(std::forward<Args>(args)...);
+  // ....
+```
+
+
+---
+
+
+# Derialize 'array-like' Containers
+```cpp
+auto arr = json.get_array()
+for (auto v : arr) {
+    concepts::emplace_one(out, v.get<value_type>());
+}
+ ```
 
 ---
 
@@ -726,6 +772,22 @@ if (!needs_escape)
 
 We've observed a 6% slow-down when compiling simdjson with static reflection enabled. (clang p2996 experimental branch).
 
+
+---
+
+## Learning Curve
+
+```
+error: invalid use of incomplete type 'std::reflect::member_info<
+  std::reflect::get_public_data_members_t<Person>[0]>'
+  in instantiation of function template specialization
+  'get_member_name<Person, 0>' requested here
+    note: in instantiation of function template specialization
+    'serialize_impl<Person>' requested here
+      note: while substituting template arguments for class template
+```
+
+
 ---
 
 ![bg right](images/racecar.png)
@@ -741,7 +803,7 @@ We've observed a 6% slow-down when compiling simdjson with static reflection ena
 
 4) **SIMD**: String operations benefit
 
-5) **Many optimization helps**
+5) **Many optimizationns may help**
 
 ---
 
