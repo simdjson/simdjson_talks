@@ -20,14 +20,14 @@ CppCon 2025
 
 # JSON
 
-- Portable, simple
-- Used by ~97% of API requests. [Landscape of API Traffic 2021 - Cloudflare](https://blog.cloudflare.com/landscape-of-api-traffic/#:~:text=We%20begin%20by%20examining%20the,first%20week%20of%20February%202021)
-- scalar values
-  - strings (must be escaped)
-  - numbers (but not `NaN` or `Inf`)
-- composed values
-  - objects (key/value)
-  - arrays (list)
+* Portable, simple
+* Used by ~97% of API requests. [Landscape of API Traffic 2021 - Cloudflare](https://blog.cloudflare.com/landscape-of-api-traffic/#:~:text=We%20begin%20by%20examining%20the,first%20week%20of%20February%202021)
+* scalar values
+  * strings (must be escaped)
+  * numbers (but not `NaN` or `Inf`)
+* composed values
+  * objects (key/value)
+  * arrays (list)
 
 
 ---
@@ -72,10 +72,10 @@ Source: Gwen (Chen) Shapira
 
 # Performance
 
-- simdjson was the first library to break the gigabyte per second barrier
+* simdjson was the first library to break the gigabyte per second barrier
     * Parsing Gigabytes of JSON per Second, VLDB Journal 28 (6), 2019
     * On-Demand JSON: A Better Way to Parse Documents? SPE 54 (6), 2024
-- JSON for Modern C++ can be $100\times$ slower!
+* JSON for Modern C++ (nlohmann/json) can be $100\times$ slower!
 
 <img src="images/simdjson.png" width="10%" />
 
@@ -85,9 +85,9 @@ Source: Gwen (Chen) Shapira
 
 ## SIMD (Single Instruction, multiple data)
 
-- Allows us to process 16 (or more) bytes or more with one instruction
-- Supported on all modern CPUs (phone, laptop)
-- Data-parallel types (SIMD) (recently added to C++26)
+* Allows us to process 16 (or more) bytes or more with one instruction
+* Supported on all modern CPUs (phone, laptop)
+* Data-parallel types (SIMD) (recently added to C++26)
 
 ---
 
@@ -103,20 +103,20 @@ Source: Gwen (Chen) Shapira
 
 # SIMD support in simdjson
 
-- x64: SSSE3 (128-bit), AVX-2 (256-bit), AVX-512 (512-bit)
-- ARM NEON
-- POWER (PPC64)
-- Loongson: LSX (128-bit) and LASX (256-bit)
-- RISC-V: *upcoming*
+* x64: SSSE3 (128-bit), AVX-2 (256-bit), AVX-512 (512-bit)
+* ARM NEON
+* POWER (PPC64)
+* Loongson: LSX (128-bit) and LASX (256-bit)
+* RISC-V: *upcoming*
 
 ---
 
 # simdjson: Parsing design
 
-- First scan identifies the structural characters, start of all strings at about 10 GB/s using SIMD instructions.
-- Validates Unicode (UTF-8) at 30 GB/s.
-- Rest of parsing relies on the generated index.
-- Allows fast skipping. (Only parse what we need)
+* First scan identifies the structural characters, start of all strings at about 10 GB/s using SIMD instructions.
+* Validates Unicode (UTF-8) at 30 GB/s.
+* Rest of parsing relies on the generated index.
+* Allows fast skipping. (Only parse what we need)
 
 ---
 
@@ -132,15 +132,15 @@ https://openbenchmarking.org/test/pts/simdjson
 
 The simdjson library is found in...
 
-- Node.js
+- Node.js, Electron, ...
 - ClickHouse
 - Velox
 - Milvus
 - QuestDB
 - StarRocks
-- ...
 
-<img src="images/nodejs.jpg" width="20%">
+<img src="images/nodejs.jpg" width="20%"> <img src="images/clickhouse.jpg" width="20%">
+
 
 ---
 
@@ -238,8 +238,8 @@ struct Player {
 
 This manual approach has several problems:
 
-1. **Maintenance Nightmare**: Add a new field? Update both functions!
-2. **Error-Prone**: Typos in field names, forgotten fields, type mismatches
+1) **Maintenance Nightmare**: Add a new field? Update both functions!
+2) **Error-Prone**: Typos in field names, forgotten fields, type mismatches
 
 ---
 
@@ -291,8 +291,8 @@ let player: Player = serde_json::from_str(&json_str)?;
 
 # Rust reflection
 
-- Rust does not have any built-in reflection capabilities.
-- Serde relies on annotation and macros.
+* Rust does not have any built-in reflection capabilities.
+* Serde relies on annotation and macros.
 
 <img src="images/rust_reflection.jpg" width="50%">
 
@@ -303,11 +303,11 @@ let player: Player = serde_json::from_str(&json_str)?;
 
 | language | runtime reflection | compile-time reflection |
 |:---------|:-------------------|:------------------------|
-| C++ 26   |      👎              |       ✅               |
-| Go       |          ✅           |       👎               |
-| Java   |       ✅              |     👎                |
-| C#   |          ✅           |       👎               |
-| Rust   |         👎           |       👎               |
+| C++ 26   |       ❌            |       ✅                |
+| Go       |       ✅            |       ❌                |
+| Java     |       ✅            |       ❌                |
+| C#       |       ✅            |       ❌                |
+| Rust     |       ❌ (macros)   |       ❌                |
 
 ---
 
@@ -359,10 +359,10 @@ Runnable example at https://godbolt.org/z/Efr7bK9jn
 
 # Benefits of our implementation
 
-- **No manual field mapping**
-- **Minimal maintenance burden**
-- **Handles nested and user-defined structures and containers automatically**
-- **You can still customize things if and when you want to**
+* **No manual field mapping**
+* **Minimal maintenance burden**
+* **Handles nested and user-defined structures and containers automatically**
+* **You can still customize things if and when you want to**
 
 ---
 
@@ -463,11 +463,11 @@ We can say that serializing/parsing the basic types and custom classes/structs i
 
 How do we automatically serialize ALL these different containers?
 
-- `std::vector<T>`, `std::list<T>`, `std::deque<T>`
-- `std::map<K,V>`, `std::unordered_map<K,V>`
-- `std::set<T>`, `std::array<T,N>`
-- Custom containers from libraries
-- **Future containers not yet invented**
+* `std::vector<T>`, `std::list<T>`, `std::deque<T>`
+* `std::map<K,V>`, `std::unordered_map<K,V>`
+* `std::set<T>`, `std::array<T,N>`
+* Custom containers from libraries
+* **Future containers not yet invented**
 
 ---
 
@@ -520,9 +520,9 @@ struct GameData {
 ```
 
 The magic:
-1. **Reflection** discovers your struct's fields
-2. **Concepts** match container behavior to serialization strategy
-3. **Result**: ALL containers work automatically - standard, custom, or future!
+1) **Reflection** discovers your struct's fields
+2) **Concepts** match container behavior to serialization strategy
+3) **Result**: ALL containers work automatically - standard, custom, or future!
 
 **Write once, works everywhere™**
 
@@ -723,7 +723,7 @@ We've observed a 6% slow-down when compiling simdjson with static reflection ena
 - Matt Godbolt and contributors
 
 **simdjson Community**
-- All contributors and users
+- All contributors and users (John Keiser, Geoff Langdale, Paul Dreik...)
 
 ---
 
