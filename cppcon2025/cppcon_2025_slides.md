@@ -117,6 +117,7 @@ Source: Gwen (Chen) Shapira
 * Validates Unicode (UTF-8) at 30 GB/s.
 * Rest of parsing relies on the generated index.
 * Allows fast skipping. (Only parse what we need)
+* Can minify JSON at 10 to 20 GB/s
 
 ---
 
@@ -132,12 +133,9 @@ https://openbenchmarking.org/test/pts/simdjson
 
 The simdjson library is found in...
 
-- Node.js, Electron, ...
+- Node.js, Electron,...
 - ClickHouse
-- Velox
-- Milvus
-- QuestDB
-- StarRocks
+- WatermelonDB, Apache Doris, Meta Velox, Milvus,  QuestDB,  StarRocks
 
 <img src="images/nodejs.jpg" width="20%"> <img src="images/clickhouse.jpg" width="20%">
 
@@ -622,7 +620,7 @@ if (!needs_escape)
 
 * Use the equivalent of `std::to_chars`
 * Could use SIMD if we wanted to
-  * Daniel Lemire, "Converting integers to decimal strings faster with AVX-512," in Daniel Lemire's blog, March 28, 2022, https://lemire.me/blog/2022/03/28/converting-integers-to-decimal-strings-faster-with-avx-512/.
+  * "Converting integers to decimal strings faster with AVX-512," in Daniel Lemire's blog, March 28, 2022, https://lemire.me/blog/2022/03/28/converting-integers-to-decimal-strings-faster-with-avx-512/.
 * Replace fast digit count by naive approach based on `std::to_string`
     ```cpp
     std::to_string(value).length();
