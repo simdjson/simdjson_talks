@@ -111,7 +111,7 @@ Source: Gwen (Chen) Shapira
 
 ---
 
-# simdjson: Parsing design
+# simdjson: design
 
 * First scan identifies the structural characters, start of all strings at about 10 GB/s using SIMD instructions.
 * Validates Unicode (UTF-8) at 30 GB/s.
@@ -131,7 +131,7 @@ https://openbenchmarking.org/test/pts/simdjson
 
 # Usage
 
-The simdjson library is found in...
+You are probably using simdjson:
 
 - Node.js, Electron,...
 - ClickHouse
