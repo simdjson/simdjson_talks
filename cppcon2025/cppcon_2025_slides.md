@@ -680,27 +680,7 @@ int fast_digit_count_64(uint64_t x) {
 
 # Could use SIMD if we wanted to
 
-**Don't try to understand:**
-```cpp
-__m128i to_string_avx512ifma(uint64_t n) {
-  uint64_t n_15_08  = n / 100000000;
-  uint64_t n_07_00  = n % 100000000;
-  __m512i bcstq_h   = _mm512_set1_epi64(n_15_08);
-  __m512i bcstq_l   = _mm512_set1_epi64(n_07_00);
-  __m512i zmmzero   = _mm512_castsi128_si512(_mm_cvtsi64_si128(0x1A1A400));
-  __m512i zmmTen    = _mm512_set1_epi64(10);
-  __m512i asciiZero = _mm512_set1_epi64('0');
-  __m512i ifma_const	= _mm512_setr_epi64(0x00000000002af31dc, ...);
-  __m512i permb_const	= _mm512_castsi128_si512(_mm_set_epi8(0x78, ...));
-  __m512i lowbits_h	= _mm512_madd52lo_epu64(zmmzero, bcstq_h, ifma_const);
-  __m512i lowbits_l	= _mm512_madd52lo_epu64(zmmzero, bcstq_l, ifma_const);
-  __m512i highbits_h	= _mm512_madd52hi_epu64(asciiZero, zmmTen, lowbits_h);
-  __m512i highbits_l	= _mm512_madd52hi_epu64(asciiZero, zmmTen, lowbits_l);
-  __m512i perm          = _mm512_permutex2var_epi8(highbits_h, permb_const, highbits_l);
-  __m128i digits_15_0	= _mm512_castsi512_si128(perm);
-  return digits_15_0;
-}
-```
+- Daniel Lemire, "Converting integers to decimal strings faster with AVX-512," in Daniel Lemire's blog, March 28, 2022, https://lemire.me/blog/2022/03/28/converting-integers-to-decimal-strings-faster-with-avx-512/.
 
 ---
 
