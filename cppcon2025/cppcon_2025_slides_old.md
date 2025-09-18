@@ -968,6 +968,13 @@ _mm512_cmple_epu8_mask(word, _mm512_set1_epi8(31));
 
 **3.4 GB/s** - 14x faster than nlohmann, 2.5x faster than Serde!
 
+
+---
+
+
+<img src="images/perf_with_simdjson_parsing.png" width="80%"/>
+
+
 ---
 
 # Ablation Study: How We Achieved 3.2 GB/s
@@ -983,7 +990,7 @@ From neuroscience: systematically remove parts to understand function
 
 ---
 
-# Five Key Optimizations
+# Three Key Optimizations
 
 1. **Consteval**: Compile-time field name processing
 2. **SIMD String Escaping**: Vectorized character checks
