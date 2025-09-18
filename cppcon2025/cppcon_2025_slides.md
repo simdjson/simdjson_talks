@@ -43,7 +43,7 @@ CppCon 2025
 
 ---
 
-# JSON downside?
+# JSON Downside?
 
 Reading and writing JSON can be *slow*. E.g., 100 MB/s to 300 MB/s.
 
@@ -70,7 +70,7 @@ Source: Gwen (Chen) Shapira
 
 ---
 
-# Performance
+# Parsing at Gigabytes per Second
 
 * simdjson was the first library to break the gigabyte per second barrier
     * Parsing Gigabytes of JSON per Second, VLDB Journal 28 (6), 2019
@@ -91,7 +91,7 @@ Source: Gwen (Chen) Shapira
 
 ---
 
-# Not all processors are equal
+# Not All Processors are Equal
 
 | processor       | year    | arithmetic logic units    | SIMD units     |
 |-----------------|---------|---------------------------|----------------|
@@ -101,7 +101,7 @@ Source: Gwen (Chen) Shapira
 
 ---
 
-# SIMD support in simdjson
+# SIMD Support in simdjson
 
 * x64: SSSE3 (128-bit), AVX-2 (256-bit), AVX-512 (512-bit)
 * ARM NEON
@@ -111,7 +111,7 @@ Source: Gwen (Chen) Shapira
 
 ---
 
-# simdjson: design
+# simdjson: Design
 
 * First scan identifies the structural characters, start of all strings at about 10 GB/s using SIMD instructions.
 * Validates Unicode (UTF-8) at 30 GB/s.
@@ -270,7 +270,7 @@ Player deserializedPlayer = JsonSerializer.Deserialize<Player>(jsonInput, option
 
 ---
 
-# Why can C# implementation be so elegant?
+# How can C# Implementation be so Elegant?
 It is using **reflection** to access the attributes of a struct during runtime.
 
 ---
@@ -278,6 +278,9 @@ It is using **reflection** to access the attributes of a struct during runtime.
 # Rust (serde)
 
 ```rust
+#[derive(Serialize, Deserialize)] // Annotation is required
+pub struct player {}
+
 // Rust with serde
 let json_str = serde_json::to_string(&player)?;
 let player: Player = serde_json::from_str(&json_str)?;
@@ -287,7 +290,7 @@ let player: Player = serde_json::from_str(&json_str)?;
 
 ---
 
-# Rust reflection
+# Rust Reflection
 
 * Rust does not have any built-in reflection capabilities.
 * Serde relies on annotation and macros.
@@ -297,7 +300,7 @@ let player: Player = serde_json::from_str(&json_str)?;
 ---
 
 
-# Reflection as accessing the attributes of a struct.
+# Reflection as Accessing the Attributes of a Structure
 
 | language | runtime reflection | compile-time reflection |
 |:---------|:-------------------|:------------------------|
@@ -309,7 +312,7 @@ let player: Player = serde_json::from_str(&json_str)?;
 
 ---
 
-# Now it's our turn to have reflection!
+# Now it's our Turn to Have Reflection!
 
 <!-- TODO: maybe add a reference to one of Herb's talks -->
 
