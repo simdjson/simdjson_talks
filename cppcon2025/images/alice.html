@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formatted JSON Code</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .code-container {
+            background-color: #252526;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        code {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .key {
+            color: #92b8d7;
+        }
+        .string {
+            color: #f5f1f0;
+        }
+        .number {
+            color: #b5cea8;
+        }
+        .array {
+            color: #d7ba7d;
+        }
+        .punctuation {
+            color: #d4d4d4;
+        }
+    </style>
+</head>
+<body>
+    <div class="code-container">
+        <pre><code><span class="punctuation">{</span>
+    <span class="key">"username"</span><span class="punctuation">: </span><span class="string">"Alice"</span><span class="punctuation">,</span>
+    <span class="key">"level"</span><span class="punctuation">: </span><span class="number">42</span><span class="punctuation">,</span>
+    <span class="key">"health"</span><span class="punctuation">: </span><span class="number">99.5</span><span class="punctuation">,</span>
+    <span class="key">"inventory"</span><span class="punctuation">: </span><span class="array">[<span class="string">"sword"</span><span class="punctuation">, </span><span class="string">"shield"</span><span class="punctuation">, </span><span class="string">"potion"</span>]</span>
+<span class="punctuation">}</span></code></pre>
+    </div>
+</body>
+</html>

@@ -70,7 +70,7 @@ plt.savefig('perf_with_simdjson.png', dpi=300, bbox_inches='tight')
 plt.close()
 
 
-# Chart 2b: Parsing only (même style)
+# Chart 2b: Parsing only (same style)
 plt.figure(figsize=(10, 6))
 bars = plt.bar(libraries_with, [172, 658, 1720, 2230, 4090], color=colors_with, edgecolor='black')
 ax = plt.gca()

@@ -1,0 +1,35 @@
+=== SimdJSON Reflection (simdjson_to) ===
+# Reading file /Users/random_person/Desktop/simdjson/buildreflect/jsonexamples/twitter.json
+# output volume: 93311 bytes
+bench_simdjson_to                                            :  3598.34 MB/s   0.93 Ms/s
+
+=== SimdJSON Static Reflection ===
+# Reading file /Users/random_person/Desktop/simdjson/buildreflect/jsonexamples/twitter.json
+# output volume: 93311 bytes
+bench_simdjson_static_reflection                             :  4257.15 MB/s   1.09 Ms/s
+
+=== nlohmann::json ===
+# Reading file /Users/random_person/Desktop/simdjson/buildreflect/jsonexamples/twitter.json
+# output volume: 93311 bytes
+bench_nlohmann                                               :  174.58 MB/s   0.00 Ms/s
+
+=== RapidJSON ===
+# Reading file /Users/random_person/Desktop/simdjson/buildreflect/jsonexamples/twitter.json
+# output volume: 93311 bytes
+bench_rapidjson                                              :  529.25 MB/s   0.01 Ms/s
+
+=== YYJson ===
+# Reading file /Users/random_person/Desktop/simdjson/buildreflect/jsonexamples/twitter.json
+# output volume: 93311 bytes
+bench_yyjson                                                 :  1909.87 MB/s   0.02 Ms/s
+
+=== Rust/Serde ===
+# Reading file /Users/random_person/Desktop/simdjson/buildreflect/jsonexamples/twitter.json
+# Note: Rust/Serde may include additional fields not in C++ structure.
+# output volume: 93311 bytes
+bench_rust                                                   :  417.89 MB/s   0.00 Ms/s
+
+=== Reflect-cpp ===
+# Reading file /Users/random_person/Desktop/simdjson/buildreflect/jsonexamples/twitter.json
+# output volume: 93311 bytes
+bench_reflect_cpp                                            :  1517.55 MB/s   0.02 Ms/s
