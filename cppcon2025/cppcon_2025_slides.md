@@ -680,7 +680,7 @@ int fast_digit_count_64(uint64_t x) {
 
 # Could use SIMD if we wanted to
 
-**Don't try to understand:**:
+**Don't try to understand:**
 ```cpp
 __m128i to_string_avx512ifma(uint64_t n) {
   uint64_t n_15_08  = n / 100000000;
