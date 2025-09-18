@@ -527,7 +527,7 @@ Concepts let us say: **"If it walks like a duck and quacks like a duck..."**
 
 ```cpp
 template <typename T>
-concept container_but_not_string =
+concept container =
     requires(T a) {
       { a.size() } -> std::convertible_to<std::size_t>;
       {
@@ -538,6 +538,7 @@ concept container_but_not_string =
 
 ---
 
+# Containers, but not string types
 
 ```cpp
 template <typename T>
@@ -601,7 +602,7 @@ struct GameData {
 The magic:
 1) **Reflection** discovers your struct's fields
 2) **Concepts** match container behavior to serialization strategy
-3) **Result**: ALL containers work automatically - standard, custom, or future!
+3) **Result**: MOST containers work automatically - standard, custom, or future!
 
 **Write once, works everywhere™**
 
@@ -727,22 +728,18 @@ We've observed a 6% slow-down when compiling simdjson with static reflection ena
 
 ---
 
+![bg right](images/racecar.png)
+
 
 # Key Technical Insights
 
-1) **With reflection and concepts**
-   - your code becomes shorter
-   - your code becomes more general
+1) **With reflection and concepts**, code is shorter and more general
 
-2) **Compilation time not much slower**
+2) **Fast compile time**
 
 3) **Compile-Time optimizations can be awesome**
-   - Consteval: 2-2.6x speedup alone
 
-4) **SIMD** String operations benefit
-
-5) **Every Optimization Matters**
-   - Small gains compound into huge improvements
+4) **SIMD**: String operations benefit
 
 
 ---
