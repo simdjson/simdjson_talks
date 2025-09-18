@@ -1,0 +1,10 @@
+
+| Library/Method | Throughput | Time/iter | Notes |
+|----------------|------------|-----------|-------|
+| **simdjson (manual)** | 4.36 GB/s | 138.04 μs | Hand-written parsing code |
+| **simdjson::from()** | 4.17 GB/s | 144.45 μs | High-level API, uses C++26 reflection |
+| **simdjson (reflection)** | 4.09 GB/s | 147.19 μs | C++26 static reflection |
+| **yyjson** | 2.23 GB/s | 269.71 μs | C library |
+| **Serde (Rust)** | 1.72 GB/s | 349.75 μs | Via FFI |
+| **RapidJSON** | 658 MB/s | 915.14 μs | Full extraction |
+| **nlohmann/json** | 172 MB/s | 3501.02 μs | Full extraction |
