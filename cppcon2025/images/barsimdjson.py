@@ -1,11 +1,13 @@
+
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 16})
 
 # Data from the user
 processors = [
-    "AMD Ryzen 9 9950X3D",
-    "Intel Core Ultra 9 285K",
-    "Snapdragon X Elite X1E78100",
-    "ARMv8 Neoverse-V2 72-Core"
+    "AMD Ryzen 9",# 9950X3D
+    "Intel Ultra",#  Core9 285K
+    "Snapdragon X Elite",# X1E78100
+    "ARM Neoverse-V2" #
 ]
 gb_per_second = [13.64, 10.07, 4.27, 4.06]
 

@@ -122,7 +122,7 @@ Source: Gwen (Chen) Shapira
 ---
 
 
-<img src="images/simdjson_benchmark.png" width="60%"/>
+<img src="images/simdjson_benchmark.png" width="80%"/>
 
 https://openbenchmarking.org/test/pts/simdjson
 
