@@ -555,7 +555,7 @@ From neuroscience: systematically remove parts to understand function
 
 ---
 
-# Five Key Optimizations
+# Three Key Optimizations
 
 1) **Consteval**: Compile-time field name processing
 2) **SIMD String Escaping**: Vectorized character checks
