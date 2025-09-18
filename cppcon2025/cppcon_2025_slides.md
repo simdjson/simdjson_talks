@@ -7,6 +7,9 @@ paginate: true
 _paginate: false
 ---
 
+![bg right](images/jsonmirror.png)
+
+
 # C++26 Reflection for JSON Serialization
 ## A Practical Journey
 
@@ -289,13 +292,13 @@ let player: Player = serde_json::from_str(&json_str)?;
 <img src="images/rust.png" width="10%" />
 
 ---
+![bg left](images/rust_reflection.jpg)
 
 # Rust Reflection
 
 * Rust does not have any built-in reflection capabilities.
 * Serde relies on annotation and macros.
 
-<img src="images/rust_reflection.jpg" width="50%">
 
 ---
 
@@ -553,9 +556,17 @@ The magic:
 
 **3.4 GB/s** - 14x faster than nlohmann, 2.5x faster than Serde!
 
+
 ---
 
-# Ablation Study: How We Achieved 3.4 GB/s
+
+<img src="images/perf_with_simdjson_parsing.png" width="80%"/>
+
+
+---
+
+# Serialization Ablation Study
+## How We Achieved 3.4 GB/s
 
 **What is Ablation?**
 From neuroscience: systematically remove parts to understand function
