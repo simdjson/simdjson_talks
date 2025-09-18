@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 16})
 
 # Chart 1: Current landscape (without simdjson)
 libraries_landscape = ["nlohmann::json", "RapidJSON", "Serde (Rust)", "yyjson"]
