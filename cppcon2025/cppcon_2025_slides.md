@@ -665,7 +665,7 @@ The magic:
 
 ---
 
-**3.4 GB/s** - 14x faster than nlohmann, 2.5x faster than Serde!
+**3.6 GB/s** - 14x faster than nlohmann, 2.1x faster than Serde!
 
 ---
 
