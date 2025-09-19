@@ -213,7 +213,7 @@ fmt::format(
 
 <!-- The code was really painful to read, this is probably sufficient. -->
 ```cpp
-object obj = val.get_object();
+object obj = json.get_object();
 p.username = obj["username"].get_string();
 p.level = obj["level"].get_int64();
 p.health = obj["health"].get_double();
@@ -536,6 +536,8 @@ concept container =
     };
 ```
 
+* Could also use iterators (`begin()`).
+
 ---
 
 # Containers, but not string types
@@ -624,7 +626,7 @@ constexpr decltype(auto) emplace_one(T &vec, Args &&...args) {
 ---
 
 
-# Derialize 'array-like' Containers
+# Deserialize 'array-like' Containers
 ```cpp
 auto arr = json.get_array()
 for (auto v : arr) {
@@ -803,7 +805,7 @@ error: invalid use of incomplete type 'std::reflect::member_info<
 
 4) **SIMD**: String operations benefit
 
-5) **Many optimizationns may help**
+5) **Many optimizations may help**
 
 ---
 
