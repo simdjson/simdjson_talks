@@ -676,13 +676,13 @@ The magic:
 ---
 
 # Serialization Ablation Study
-## How We Achieved 3.4 GB/s
+## How We Achieved 3.6 GB/s
 
 **What is Ablation?**
 From neuroscience: systematically remove parts to understand function
 
 **Our Approach (Apple Silicon M3 MAX):**
-1) **Baseline**: All optimizations enabled (3,400 MB/s)
+1) **Baseline**: All optimizations enabled (3,600 MB/s)
 2) **Disable one optimization** at a time
 3) **Measure performance impact**
 4) **Calculate contribution**: `(Baseline - Disabled) / Disabled`
